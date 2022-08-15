@@ -52,6 +52,7 @@ public class UserService{
         newUserEntity.setEmail(email);
         newUserEntity.setPassword(encode(password));
         newUserEntity.setRole(UserRoles.ROLE_USER);
+        newUserEntity.setActive(true);
         userRepository.save(newUserEntity);
         return newUserEntity;
     }
