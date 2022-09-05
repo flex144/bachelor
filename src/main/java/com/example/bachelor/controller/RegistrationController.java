@@ -2,6 +2,7 @@ package com.example.bachelor.controller;
 
 import com.example.bachelor.data.dto.UserDto;
 import com.example.bachelor.services.UserService;
+import com.example.bachelor.utility.constants.HtmlConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,8 @@ public class RegistrationController {
 
     @GetMapping
     public String showRegistrationForm(Model model) {
-        return "registration";
+
+        return HtmlConstants.REGISTRATION;
     }
 
     @PostMapping
@@ -62,7 +64,7 @@ public class RegistrationController {
             return "redirect:/login";
         } else {
             model.addAttribute("errorMessage", errorMessage);
-            return "registration";
+            return HtmlConstants.REGISTRATION;
         }
     }
 

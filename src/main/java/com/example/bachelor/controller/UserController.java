@@ -4,6 +4,7 @@ import com.example.bachelor.data.dto.UserDetailsPrincipal;
 import com.example.bachelor.data.dto.UserDto;
 import com.example.bachelor.data.entities.UserEntity;
 import com.example.bachelor.services.UserService;
+import com.example.bachelor.utility.constants.HtmlConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,7 @@ public class UserController {
     @GetMapping("/users")
     public String getUsers(Model model) {
         model.addAttribute("users", userService.readAllUsers());
-        return "user_overview";
+        return HtmlConstants.USER_OVERVIEW;
     }
 
     @GetMapping("/profile")
@@ -37,6 +38,6 @@ public class UserController {
         }
 
         model.addAttribute("user", userDto);
-        return "userprofile";
+        return HtmlConstants.USERPROFILE;
     }
 }

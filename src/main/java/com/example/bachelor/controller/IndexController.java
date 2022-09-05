@@ -1,6 +1,7 @@
 package com.example.bachelor.controller;
 
 import com.example.bachelor.services.UserService;
+import com.example.bachelor.utility.constants.HtmlConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,17 +15,19 @@ public class IndexController {
 
     @RequestMapping(value= {"/index"})
     public String getIndex() {
-        return "index";
+        return HtmlConstants.INDEX;
     }
 
     @RequestMapping(value = {"/login", "/"})
     public String login() {
-        return "login_page";
+
+        return HtmlConstants.LOGIN_PAGE;
     }
 
     @RequestMapping(value= {"/registration"})
     public String registration() {
-        return "registration";
+
+        return HtmlConstants.REGISTRATION;
     }
 
 }
