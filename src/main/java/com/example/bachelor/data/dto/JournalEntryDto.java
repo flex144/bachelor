@@ -1,28 +1,29 @@
-package com.example.bachelor.data.entities;
+package com.example.bachelor.data.dto;
 
 import com.example.bachelor.data.enums.EntryType;
-import com.example.bachelor.data.enums.UserRoles;
 
-import javax.persistence.*;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Date;
 
-@Entity
-@Table(name="journal_entry")
-public class JournalEntryEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_generator")
-    @SequenceGenerator(name="user_generator", sequenceName = "user_seq", allocationSize=1)
+public class JournalEntryDto {
+
+    Long journalId;
     private Long journalEntryId;
     private Long userId;
-    @Enumerated(EnumType.STRING)
     private EntryType entryType;
     private Date creation;
     private String description;
 
-    @ManyToOne
-    private JournalEntity journal;
+    public JournalEntryDto() {
+    }
 
-    public JournalEntryEntity() {
+    public Long getJournalId() {
+        return journalId;
+    }
+
+    public void setJournalId(Long journalId) {
+        this.journalId = journalId;
     }
 
     public Long getJournalEntryId() {
@@ -63,13 +64,5 @@ public class JournalEntryEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public JournalEntity getJournal() {
-        return journal;
-    }
-
-    public void setJournal(JournalEntity journal) {
-        this.journal = journal;
     }
 }

@@ -52,7 +52,7 @@ public class UserService{
         newUserEntity.setEmail(email);
         newUserEntity.setPassword(encode(password));
         newUserEntity.setRole(UserRoles.ROLE_USER);
-        newUserEntity.setActive(true);
+        newUserEntity.setActive(true); //TODO: erstmal inaktiv setzen, erst bei Freischaltung durch ADMIN aktiv setzen
         userRepository.save(newUserEntity);
         return newUserEntity;
     }

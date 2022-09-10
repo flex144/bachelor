@@ -1,8 +1,13 @@
 package com.example.bachelor;
 
+import com.example.bachelor.data.entities.JournalEntity;
+import com.example.bachelor.data.entities.JournalEntryEntity;
 import com.example.bachelor.data.entities.UserEntity;
 import com.example.bachelor.data.enums.UserRoles;
+import com.example.bachelor.repositories.JournalEntryRepository;
+import com.example.bachelor.repositories.JournalRepository;
 import com.example.bachelor.repositories.UserRepository;
+import com.example.bachelor.services.JournalService;
 import com.example.bachelor.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +19,9 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootApplication
 public class BachelorApplication {
@@ -26,10 +33,33 @@ public class BachelorApplication {
 	}
 
 	@Bean
-	public CommandLineRunner mappingDemo(UserRepository userRepository, UserService userService) {
+	public CommandLineRunner mappingDemo(UserRepository userRepository, UserService userService,
+										 JournalEntryRepository journalEntryRepository,
+										 JournalRepository journalRepository,
+										 JournalService journalService) {
 		return args -> {
 
 			log.info("encoded PW="+userService.encode("123456"));
+
+			JournalEntity journalEntity = new JournalEntity();
+			Set<JournalEntryEntity> journalEntryEntitySet = new HashSet<>();
+
+			JournalEntryEntity j1 = new JournalEntryEntity();
+			j1.setDescription("hallo Welt");
+
+			JournalEntryEntity j2 = new JournalEntryEntity();
+			j2.setDescription("Hallo welt");
+
+			journalEntryEntitySet.add(j1);
+			journalEntryEntitySet.add(j2);
+
+			journalEntity.setJournalEntries(journalEntryEntitySet);
+
+			journalService.saveJournal(journalEntity);
+
+			Iterable<JournalEntity> ents = journalRepository.findAll();
+
+			journalRepository.findAll();
 
 			// create a new book
 			/*UserEntity userEntity = new UserEntity();
