@@ -1,29 +1,47 @@
 package com.example.bachelor.services;
 
-import com.example.bachelor.data.entities.JournalEntity;
+import com.example.bachelor.data.dto.JournalEntryDto;
 import com.example.bachelor.data.entities.JournalEntryEntity;
 import com.example.bachelor.repositories.JournalEntryRepository;
-import com.example.bachelor.repositories.JournalRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class JournalService {
 
     @Autowired
-    private JournalRepository journalRepository;
-
-    @Autowired
     private JournalEntryRepository journalEntryRepository;
 
-    public void saveJournal(JournalEntity journalEntity) {
+    @Autowired
+    private ModelMapper modelMapper;
 
-        journalEntity = journalRepository.save(journalEntity);
+    public void saveJournal(Set<JournalEntryEntity> journalEntities) {
 
-        for (JournalEntryEntity entry : journalEntity.getJournalEntries()) {
-            entry.setJournal(journalEntity);
-            journalEntryRepository.save(entry);
+        if (journalEntities != null) {
+            journalEntryRepository.saveAll(journalEntities);
         }
 
+    }
+
+    public void saveJournalEntry(JournalEntryEntity journalEntryEntity) {
+        journalEntryRepository.save(journalEntryEntity);
+    }
+
+    public List<JournalEntryDto> mapJournalEntriesToDto(Set<JournalEntryEntity> journalEntryEntities) {
+
+        List<JournalEntryDto> res = new ArrayList<>();
+
+        if (journalEntryEntities != null) {
+            for (JournalEntryEntity journalEntryEntity : journalEntryEntities) {
+                res.add(modelMapper.map(journalEntryEntity, JournalEntryDto.class));
+            }
+        }
+        return res;
     }
 }

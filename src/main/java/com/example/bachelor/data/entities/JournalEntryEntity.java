@@ -20,7 +20,7 @@ public class JournalEntryEntity {
     private String description;
 
     @ManyToOne
-    private JournalEntity journal;
+    private GuardDayEntity guardDay;
 
     public JournalEntryEntity() {
     }
@@ -65,11 +65,11 @@ public class JournalEntryEntity {
         this.description = description;
     }
 
-    public JournalEntity getJournal() {
-        return journal;
+    public GuardDayEntity getGuardDay() {
+        return guardDay;
     }
 
-    public void setJournal(JournalEntity journal) {
-        this.journal = journal;
+    public void setGuardDay(GuardDayEntity guardDay) {
+        this.guardDay = guardDay;
     }
 }

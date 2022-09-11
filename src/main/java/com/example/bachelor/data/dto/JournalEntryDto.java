@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class JournalEntryDto {
 
-    Long journalId;
+    private Long guardDayId;
     private Long journalEntryId;
     private Long userId;
     private EntryType entryType;
@@ -18,12 +18,12 @@ public class JournalEntryDto {
     public JournalEntryDto() {
     }
 
-    public Long getJournalId() {
-        return journalId;
+    public Long getGuardDayId() {
+        return guardDayId;
     }
 
-    public void setJournalId(Long journalId) {
-        this.journalId = journalId;
+    public void setGuardDayId(Long guardDayId) {
+        this.guardDayId = guardDayId;
     }
 
     public Long getJournalEntryId() {
