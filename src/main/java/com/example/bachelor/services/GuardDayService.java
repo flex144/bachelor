@@ -11,6 +11,10 @@ import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class GuardDayService {
 
@@ -31,6 +35,16 @@ public class GuardDayService {
 
         return guardDayMapper.mapGuardDayEntityToDto(guardDayEntity);
 
+    }
+
+    public List<GuardDayDto> readAllGuardDays() {
+
+        Iterable<GuardDayEntity> guardDays = guardDayRepository.findAll();
+        List<GuardDayDto> guardDayDtos = new ArrayList<>();
+
+        guardDays.forEach(g -> guardDayDtos.add(guardDayMapper.mapGuardDayEntityToDto(g)));
+
+        return guardDayDtos;
     }
 
     public GuardDayEntity saveGuardDayEntity(GuardDayEntity guardDayEntity) {
