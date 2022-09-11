@@ -28,8 +28,7 @@ public class GuardDayEntity {
     @Temporal(TemporalType.TIME)
     private Date actualEndTime;
 
-    @OneToMany(mappedBy = "guardDay", fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "guardDay", fetch = FetchType.EAGER)
     private Set<JournalEntryEntity> journalEntries;
 
     public GuardDayEntity() {

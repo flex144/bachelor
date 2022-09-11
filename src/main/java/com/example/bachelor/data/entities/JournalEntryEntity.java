@@ -20,6 +20,7 @@ public class JournalEntryEntity {
     private String description;
 
     @ManyToOne
+    @JoinColumn(name="guard_day_id", nullable = false)
     private GuardDayEntity guardDay;
 
     public JournalEntryEntity() {

@@ -18,30 +18,15 @@ public class JournalService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
     public void saveJournal(Set<JournalEntryEntity> journalEntities) {
 
         if (journalEntities != null) {
             journalEntryRepository.saveAll(journalEntities);
         }
-
     }
 
     public void saveJournalEntry(JournalEntryEntity journalEntryEntity) {
         journalEntryRepository.save(journalEntryEntity);
     }
 
-    public List<JournalEntryDto> mapJournalEntriesToDto(Set<JournalEntryEntity> journalEntryEntities) {
-
-        List<JournalEntryDto> res = new ArrayList<>();
-
-        if (journalEntryEntities != null) {
-            for (JournalEntryEntity journalEntryEntity : journalEntryEntities) {
-                res.add(modelMapper.map(journalEntryEntity, JournalEntryDto.class));
-            }
-        }
-        return res;
-    }
 }

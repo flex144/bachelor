@@ -6,7 +6,7 @@ import java.util.List;
 
 public class GuardDayDto {
 
-    private Long guardingDayId;
+    private Long guardDayId;
     private LocalDate guardingDate;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -17,12 +17,12 @@ public class GuardDayDto {
     public GuardDayDto() {
     }
 
-    public Long getGuardingDayId() {
-        return guardingDayId;
+    public Long getGuardDayId() {
+        return guardDayId;
     }
 
-    public void setGuardingDayId(Long guardingDayId) {
-        this.guardingDayId = guardingDayId;
+    public void setGuardDayId(Long guardDayId) {
+        this.guardDayId = guardDayId;
     }
 
     public LocalDate getGuardingDate() {

@@ -4,6 +4,7 @@ import com.example.bachelor.data.dto.GuardDayDto;
 import com.example.bachelor.data.entities.GuardDayEntity;
 import com.example.bachelor.data.entities.JournalEntryEntity;
 import com.example.bachelor.repositories.GuardDayRepository;
+import com.example.bachelor.utility.mapper.GuardDayMapper;
 import org.apache.el.lang.ELArithmetic;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
@@ -23,35 +24,18 @@ public class GuardDayService {
     private UserService userService;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private GuardDayMapper guardDayMapper;
 
     public GuardDayDto readGuardDayById(Long guardDayId) {
         GuardDayEntity guardDayEntity = guardDayRepository.findById(guardDayId).orElse(null);
 
-        return mapGuardDayEntityToDto(guardDayEntity);
+        return guardDayMapper.mapGuardDayEntityToDto(guardDayEntity);
 
     }
 
-    private GuardDayDto mapGuardDayEntityToDto(GuardDayEntity guardDayEntity) {
+    public GuardDayEntity saveGuardDayEntity(GuardDayEntity guardDayEntity) {
 
-        GuardDayDto guardDayDto = null;
-
-        if (guardDayEntity != null) {
-
-            TypeMap<GuardDayEntity, GuardDayDto> propertyMapper = modelMapper.createTypeMap(GuardDayEntity.class, GuardDayDto.class);
-            propertyMapper.addMappings(mapper -> mapper.skip(GuardDayDto::setJournalEntries));
-            guardDayDto = modelMapper.map(guardDayEntity, GuardDayDto.class);
-
-            guardDayDto.setJournalEntries(journalService.mapJournalEntriesToDto(guardDayEntity.getJournalEntries()));
-
-        }
-
-        return guardDayDto;
-    }
-
-    public GuardDayEntity saveGuardDay(GuardDayEntity guardDayEntity) {
-
-        guardDayEntity = guardDayRepository.save(guardDayEntity);
+        guardDayRepository.save(guardDayEntity);
 
         if (guardDayEntity.getJournalEntries() != null) {
             for (JournalEntryEntity journalEntryEntity : guardDayEntity.getJournalEntries()) {
@@ -61,5 +45,9 @@ public class GuardDayService {
         }
 
         return guardDayEntity;
+    }
+
+    public void saveGuardDayDto(GuardDayDto guardDayDto) {
+        saveGuardDayEntity(guardDayMapper.mapGuardDayDtoToEntity(guardDayDto));
     }
 }

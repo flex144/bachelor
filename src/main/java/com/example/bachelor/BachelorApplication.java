@@ -1,6 +1,7 @@
 package com.example.bachelor;
 
 import com.example.bachelor.data.dto.GuardDayDto;
+import com.example.bachelor.data.dto.JournalEntryDto;
 import com.example.bachelor.data.entities.GuardDayEntity;
 import com.example.bachelor.data.entities.JournalEntryEntity;
 import com.example.bachelor.data.entities.UserEntity;
@@ -60,10 +61,19 @@ public class BachelorApplication {
 
 			guardDayEntity.setJournalEntries(journalEntryEntitySet);
 
-			GuardDayEntity ent = guardDayService.saveGuardDay(guardDayEntity);
+			GuardDayEntity ent = guardDayService.saveGuardDayEntity(guardDayEntity);
 
 
 			GuardDayDto guardRead = guardDayService.readGuardDayById(ent.getGuardDayId());
+
+			JournalEntryDto j3 = new JournalEntryDto();
+			j3.setDescription("j3");
+
+			guardRead.getJournalEntries().add(j3);
+
+			guardDayService.saveGuardDayDto(guardRead);
+
+			GuardDayDto guardRead2 = guardDayService.readGuardDayById(guardRead.getGuardDayId());
 
 
 
