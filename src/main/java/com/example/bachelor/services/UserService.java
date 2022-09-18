@@ -5,6 +5,7 @@ import com.example.bachelor.data.dto.UserDto;
 import com.example.bachelor.data.entities.UserEntity;
 import com.example.bachelor.data.enums.UserRoles;
 import com.example.bachelor.repositories.UserRepository;
+import com.example.bachelor.utility.mapper.UserMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,7 +21,7 @@ public class UserService{
     private UserRepository userRepository;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private UserMapper userMapper;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -32,8 +33,15 @@ public class UserService{
     public UserDto readUserDtoById(Long id) {
         UserEntity userEntity = readUserById(id);
 
-        return userEntity != null ? modelMapper.map(userEntity, UserDto.class) : null;
+        return userMapper.mapUserEntityToDto(userEntity);
 
+    }
+
+    public List<UserDto> readAllUserDtos() {
+        List<UserDto> allUsers = new ArrayList<>();
+        readAllUsers().forEach(n -> allUsers.add(userMapper.mapUserEntityToDto(n)));
+
+        return allUsers;
     }
 
     public List<UserEntity> readAllUsers() {
@@ -65,7 +73,7 @@ public class UserService{
     public UserDto findUserDtoByEmail(String email) {
         UserEntity userEntity = findUserByEmail(email);
 
-        return userEntity != null ? modelMapper.map(userEntity, UserDto.class) : null;
+        return userMapper.mapUserEntityToDto(userEntity);
     }
 
     public String encode(String pw) {

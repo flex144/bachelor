@@ -19,6 +19,8 @@ public class GuardDayDto {
     @DateTimeFormat(pattern = "hh:mm")
     private Date actualStartTime;
     private List<JournalEntryDto> journalEntries;
+    private List<UserDto> allUsers;
+    private List<UserGuardingRelationDto> userGuardingRelations;
 
     public GuardDayDto() {
     }
@@ -77,5 +79,21 @@ public class GuardDayDto {
 
     public void setJournalEntries(List<JournalEntryDto> journalEntries) {
         this.journalEntries = journalEntries;
+    }
+
+    public List<UserDto> getAllUsers() {
+        return allUsers;
+    }
+
+    public void setAllUsers(List<UserDto> allUsers) {
+        this.allUsers = allUsers;
+    }
+
+    public List<UserGuardingRelationDto> getUserGuardingRelations() {
+        return userGuardingRelations;
+    }
+
+    public void setUserGuardingRelations(List<UserGuardingRelationDto> userGuardingRelations) {
+        this.userGuardingRelations = userGuardingRelations;
     }
 }
