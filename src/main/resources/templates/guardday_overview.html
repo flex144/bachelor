@@ -33,9 +33,9 @@
             </tr>
             <tr th:each="guardday : ${guarddays}">
                 <td><span th:text="${guardday.guardDayId}"> ID </span></td>
-                <td><span th:text="${guardday.guardingDate}"> Datum </span></td>
-                <td><span th:text="${guardday.startTime}"> Startzeit </span></td>
-                <td><span th:text="${guardday.endTime}"> Endzeit </span></td>
+                <td><span th:text="${#dates.format(guardday.guardingDate, 'dd.MM.yy')}"> Datum </span></td>
+                <td><span th:text="${#dates.format(guardday.startTime, 'hh:mm')}"> Startzeit </span></td>
+                <td><span th:text="${#dates.format(guardday.endTime, 'hh:mm')}"> Endzeit </span></td>
             </tr>
         </tbody>
     </table>

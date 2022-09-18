@@ -1,17 +1,23 @@
 package com.example.bachelor.data.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 import java.util.List;
 
 public class GuardDayDto {
 
     private Long guardDayId;
-    private LocalDate guardingDate;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private LocalDateTime actualEndTime;
-    private LocalDateTime actualStartTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date guardingDate;
+    @DateTimeFormat(pattern = "hh:mm")
+    private Date startTime;
+    @DateTimeFormat(pattern = "hh:mm")
+    private Date endTime;
+    @DateTimeFormat(pattern = "hh:mm")
+    private Date actualEndTime;
+    @DateTimeFormat(pattern = "hh:mm")
+    private Date actualStartTime;
     private List<JournalEntryDto> journalEntries;
 
     public GuardDayDto() {
@@ -25,43 +31,43 @@ public class GuardDayDto {
         this.guardDayId = guardDayId;
     }
 
-    public LocalDate getGuardingDate() {
+    public Date getGuardingDate() {
         return guardingDate;
     }
 
-    public void setGuardingDate(LocalDate guardingDate) {
+    public void setGuardingDate(Date guardingDate) {
         this.guardingDate = guardingDate;
     }
 
-    public LocalDateTime getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
-    public LocalDateTime getActualEndTime() {
+    public Date getActualEndTime() {
         return actualEndTime;
     }
 
-    public void setActualEndTime(LocalDateTime actualEndTime) {
+    public void setActualEndTime(Date actualEndTime) {
         this.actualEndTime = actualEndTime;
     }
 
-    public LocalDateTime getActualStartTime() {
+    public Date getActualStartTime() {
         return actualStartTime;
     }
 
-    public void setActualStartTime(LocalDateTime actualStartTime) {
+    public void setActualStartTime(Date actualStartTime) {
         this.actualStartTime = actualStartTime;
     }
 

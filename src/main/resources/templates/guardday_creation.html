@@ -21,22 +21,15 @@
                 <tr>
                     <th>Datum</th>
                     <td class="input-group date">
-                        <input type="text" class="form-control" id="birthdate" autocomplete="off" th:field="*{guardingDate}"/>
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                        </div>
+                        <input type="date" class="form-control" id="birthdate" autocomplete="off" th:field="*{guardingDate}"/>
                     </td>
                 </tr>
                 <tr>
                     <th>Startzeit</th>
                     <td>
                         <div class="input-group date" id="event_start_time">
-                            <input type="text" id="starttime" value="11:31:00" placeholder="Time" class="form-control" th:field="*{startTime}"/>
-                            <div class="input-group-addon input-group-append">
-                                <div class="input-group-text">
-                                    <i class="fa fa-clock-o"></i>
-                                </div>
-                            </div>
+                            <input type="time" id="starttime" value="11:31:00" placeholder="Time" class="form-control" th:field="*{startTime}"/>
+
                         </div>
                     </td>
                 </tr>
