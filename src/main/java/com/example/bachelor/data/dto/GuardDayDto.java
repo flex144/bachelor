@@ -10,13 +10,13 @@ public class GuardDayDto {
     private Long guardDayId;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date guardingDate;
-    @DateTimeFormat(pattern = "hh:mm")
+    @DateTimeFormat(pattern = "HH:mm")
     private Date startTime;
-    @DateTimeFormat(pattern = "hh:mm")
+    @DateTimeFormat(pattern = "HH:mm")
     private Date endTime;
-    @DateTimeFormat(pattern = "hh:mm")
+    @DateTimeFormat(pattern = "HH:mm")
     private Date actualEndTime;
-    @DateTimeFormat(pattern = "hh:mm")
+    @DateTimeFormat(pattern = "HH:mm")
     private Date actualStartTime;
     private List<JournalEntryDto> journalEntries;
     private List<UserDto> allUsers;
