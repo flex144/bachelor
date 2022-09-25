@@ -31,7 +31,8 @@
             <tr th:if="${guarddays.isEmpty()}">
                 <td colspan="2"> Keine Einträge vorhanden </td>
             </tr>
-            <tr th:each="guardday : ${guarddays}">
+            <tr th:each="guardday : ${guarddays}"
+                th:onclick="'javascript:rowClicked(\'' + ${guardday.guardDayId} + '\');'">
                 <td><span th:text="${guardday.guardDayId}"> ID </span></td>
                 <td><span th:text="${#dates.format(guardday.guardingDate, 'dd.MM.yy')}"> Datum </span></td>
                 <td><span th:text="${#dates.format(guardday.startTime, 'HH:mm')}"> Startzeit </span></td>
@@ -41,7 +42,11 @@
     </table>
 </div>
 
-
+<script>
+    function rowClicked(value) {
+        location.href = "../guardday_execution/" + value;
+    }
+</script>
 
 </body>
 </html>

@@ -4,6 +4,7 @@ import com.example.bachelor.data.dto.GuardDayDto;
 import com.example.bachelor.data.dto.UserGuardingRelationDto;
 import com.example.bachelor.data.entities.GuardDayEntity;
 import com.example.bachelor.data.entities.UserGuardingRelationEntity;
+import com.example.bachelor.services.UserService;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,9 @@ public class GuardDayMapper extends BaseMapper {
     @Autowired
     JournalMapper journalMapper;
 
+    @Autowired
+    UserService userService;
+
     public GuardDayDto mapGuardDayEntityToDto(GuardDayEntity guardDayEntity) {
 
         GuardDayDto guardDayDto = null;
@@ -23,6 +27,7 @@ public class GuardDayMapper extends BaseMapper {
             setPropertyMapper(GuardDayEntity.class, GuardDayDto.class, GuardDayDto::setJournalEntries);
             setPropertyMapper(GuardDayEntity.class, GuardDayDto.class, GuardDayDto::setAllUsers);
             setPropertyMapper(GuardDayEntity.class, GuardDayDto.class, GuardDayDto::setUserGuardingRelations);
+            setPropertyMapper(GuardDayEntity.class, GuardDayDto.class, GuardDayDto::setUserGuardingRelationsBooked);
 
             guardDayDto = modelMapper.map(guardDayEntity, GuardDayDto.class);
             guardDayDto.setJournalEntries(journalMapper.mapJournalEntryEntitiesToDto(guardDayEntity.getJournalEntries()));
@@ -53,6 +58,9 @@ public class GuardDayMapper extends BaseMapper {
         if (entity != null) {
 
             dto = modelMapper.map(entity, UserGuardingRelationDto.class);
+            if (dto.getUserId() != null) {
+                dto.setUserDto(userService.readUserDtoById(dto.getUserId()));
+            }
         }
 
         return dto;

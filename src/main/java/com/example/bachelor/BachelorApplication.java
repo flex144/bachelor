@@ -36,13 +36,13 @@ public class BachelorApplication {
 		SpringApplication.run(BachelorApplication.class, args);
 	}
 
-	@Bean
+	/*@Bean
 	public CommandLineRunner mappingDemo(UserRepository userRepository, UserService userService,
 										 JournalEntryRepository journalEntryRepository,
 										 GuardDayRepository guardDayRepository,
 										 GuardDayService guardDayService,
 										 JournalService journalService) {
-		return args -> {
+		*//*return args -> {
 
 			log.info("encoded PW="+userService.encode("123456"));
 
@@ -74,18 +74,18 @@ public class BachelorApplication {
 			guardDayService.saveGuardDayDto(guardRead);
 
 			GuardDayDto guardRead2 = guardDayService.readGuardDayById(guardRead.getGuardDayId());
+*//*
 
 
 
-
-/*			journalService.saveJournal(journalEntity);
+*//*			journalService.saveJournal(journalEntity);
 
 			Iterable<JournalEntity> ents = journalRepository.findAll();
 
-			journalRepository.findAll();*/
+			journalRepository.findAll();*//*
 
 			// create a new book
-			/*UserEntity userEntity = new UserEntity();
+			*//*UserEntity userEntity = new UserEntity();
 			userEntity.setEmail("fwilhelm2@gmx.de");
 			userEntity.setFirstName("Felix");
 			userEntity.setLastName("Wilhelm");
@@ -109,8 +109,8 @@ public class BachelorApplication {
 			userEntity2.setPassword("123456");
 			userEntity2.setRole(UserRoles.ADMIN);
 
-			userRepository.save(userEntity2);*/
-		};
-	}
+			userRepository.save(userEntity2);*//*
+		};*/
+
 
 }

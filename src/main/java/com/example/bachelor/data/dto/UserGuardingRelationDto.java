@@ -9,6 +9,7 @@ public class UserGuardingRelationDto {
 
     private Long guardDayId;
     private Long userId;
+    private UserDto userDto;
     @DateTimeFormat(pattern = "hh:mm")
     private Date guardingStart;
     @DateTimeFormat(pattern = "hh:mm")
@@ -33,6 +34,14 @@ public class UserGuardingRelationDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public UserDto getUserDto() {
+        return userDto;
+    }
+
+    public void setUserDto(UserDto userDto) {
+        this.userDto = userDto;
     }
 
     public Date getGuardingStart() {

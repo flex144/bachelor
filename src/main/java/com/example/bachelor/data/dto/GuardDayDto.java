@@ -2,6 +2,8 @@ package com.example.bachelor.data.dto;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,8 +20,13 @@ public class GuardDayDto {
     private Date actualEndTime;
     @DateTimeFormat(pattern = "HH:mm")
     private Date actualStartTime;
+    private String waterTemp;
+    private Long userToSave;
     private List<JournalEntryDto> journalEntries;
     private List<UserDto> allUsers;
+    //Liste mit gebuchten Helfern
+    private List<UserGuardingRelationDto> userGuardingRelationsBooked;
+    //Liste mit anwesenden Helfern
     private List<UserGuardingRelationDto> userGuardingRelations;
 
     public GuardDayDto() {
@@ -73,6 +80,22 @@ public class GuardDayDto {
         this.actualStartTime = actualStartTime;
     }
 
+    public String getWaterTemp() {
+        return waterTemp;
+    }
+
+    public void setWaterTemp(String waterTemp) {
+        this.waterTemp = waterTemp;
+    }
+
+    public Long getUserToSave() {
+        return userToSave;
+    }
+
+    public void setUserToSave(Long userToSave) {
+        this.userToSave = userToSave;
+    }
+
     public List<JournalEntryDto> getJournalEntries() {
         return journalEntries;
     }
@@ -90,10 +113,24 @@ public class GuardDayDto {
     }
 
     public List<UserGuardingRelationDto> getUserGuardingRelations() {
+        if (userGuardingRelations == null) {
+            userGuardingRelations = new ArrayList<>();
+        }
         return userGuardingRelations;
     }
 
     public void setUserGuardingRelations(List<UserGuardingRelationDto> userGuardingRelations) {
         this.userGuardingRelations = userGuardingRelations;
+    }
+
+    public List<UserGuardingRelationDto> getUserGuardingRelationsBooked() {
+        if (userGuardingRelationsBooked == null) {
+            userGuardingRelationsBooked = new ArrayList<>();
+        }
+        return userGuardingRelationsBooked;
+    }
+
+    public void setUserGuardingRelationsBooked(List<UserGuardingRelationDto> userGuardingRelationsBooked) {
+        this.userGuardingRelationsBooked = userGuardingRelationsBooked;
     }
 }

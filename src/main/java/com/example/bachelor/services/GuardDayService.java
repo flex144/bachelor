@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GuardDayService {
@@ -53,7 +54,9 @@ public class GuardDayService {
         GuardDayDto guardDayDto = readGuardDayById(guardDayId);
 
         guardDayDto.setAllUsers(userService.readAllUserDtos());
-        guardDayDto.setUserGuardingRelations(readUserGuardingRelations(guardDayDto.getGuardDayId()));
+        List<UserGuardingRelationDto> allRelations = readUserGuardingRelations(guardDayId);
+        guardDayDto.setUserGuardingRelations(allRelations.stream().filter(n -> !n.isBooked()).collect(Collectors.toList()));
+        guardDayDto.setUserGuardingRelationsBooked(allRelations.stream().filter(n -> n.isBooked()).collect(Collectors.toList()));
 
         return guardDayDto;
     }
@@ -86,6 +89,14 @@ public class GuardDayService {
         saveGuardDayEntity(guardDayMapper.mapGuardDayDtoToEntity(guardDayDto));
     }
 
+    public void saveUserGuardingRelationEntity(UserGuardingRelationEntity userGuardingRelationEntity) {
+        userGuardingRelationRepository.save(userGuardingRelationEntity);
+    }
+
+    public void saveUserGuardingRelationDto(UserGuardingRelationDto userGuardingRelationDto) {
+        saveUserGuardingRelationEntity(guardDayMapper.mapUserGuardingRelationDtoToEntity(userGuardingRelationDto));
+    }
+
     private List<UserGuardingRelationEntity> readUserGuardingRelationEntities(Long guardDayId) {
         List<UserGuardingRelationEntity> result = new ArrayList<>();
         userGuardingRelationRepository.findUserGuardingRelationEntitiesByGuardDayId(guardDayId).forEach(result::add);
@@ -97,5 +108,11 @@ public class GuardDayService {
         readUserGuardingRelationEntities(guardDayId).forEach(n -> result.add(guardDayMapper.mapUserGuardingRelationEntityToDto(n)));
 
         return result;
+    }
+
+    private List<UserGuardingRelationDto> filterBookedUserGuardingRelations(List<UserGuardingRelationDto> allRelations,
+                                                                            boolean booked) {
+
+        return allRelations.stream().filter(n -> n.isBooked() == booked).collect(Collectors.toList());
     }
 }

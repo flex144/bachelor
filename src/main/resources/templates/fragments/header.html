@@ -50,7 +50,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <div class="navbar-brand">
-            <img src="images/wasserwacht-logo.png" />
+            <img src="../images/wasserwacht-logo.png" />
     </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -84,9 +84,9 @@
                   <li><a class="dropdown-item" th:href="@{/guardday_overview}">Wachtag Übersicht</a></li>
               </ul>
           </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-        </li>
+          <li class="nav-item" sec:authorize="hasRole('USER')">
+              <a class="nav-link" th:href="@{/guardday_overview}">Wachtag Übersicht</a>
+          </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
             <li th:if="${#authorization.expression('!isAuthenticated()')}">
