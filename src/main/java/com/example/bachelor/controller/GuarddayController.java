@@ -102,6 +102,21 @@ public class GuarddayController {
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
     }
 
+    @PostMapping("/guardday_execution/startEndGuardday")
+    public String startEndGuardday(Model model,
+                                @ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto) {
+
+        //Wenn noch keine Startzeit gesetzt wurde muss 'Wachstart' gedrückt worden sein
+        if (guardDayDto.getActualStartTime() == null) {
+            guardDayDto.setActualStartTime(new Date());
+        } else {
+            guardDayDto.setActualEndTime(new Date());
+        }
+        guardDayService.saveGuardDayDto(guardDayDto);
+
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
+
 
 
 
