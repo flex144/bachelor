@@ -21,6 +21,7 @@ public class GuardDayDto {
     @DateTimeFormat(pattern = "HH:mm")
     private Date actualStartTime;
     private String waterTemp;
+    private String journalDescription;
     private Long userToSave;
     private List<JournalEntryDto> journalEntries;
     private List<UserDto> allUsers;
@@ -86,6 +87,14 @@ public class GuardDayDto {
 
     public void setWaterTemp(String waterTemp) {
         this.waterTemp = waterTemp;
+    }
+
+    public String getJournalDescription() {
+        return journalDescription;
+    }
+
+    public void setJournalDescription(String journalDescription) {
+        this.journalDescription = journalDescription;
     }
 
     public Long getUserToSave() {

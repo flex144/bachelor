@@ -7,6 +7,7 @@ public class WeatherApiResult {
     private double precip;
     private double windspeed;
     private String icon;
+    private String conditions;
 
     public WeatherApiResult() {
     }
@@ -49,5 +50,13 @@ public class WeatherApiResult {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(String conditions) {
+        this.conditions = conditions;
     }
 }

@@ -2,6 +2,8 @@ package com.example.bachelor.utility.mapper;
 
 import com.example.bachelor.data.dto.JournalEntryDto;
 import com.example.bachelor.data.entities.JournalEntryEntity;
+import com.example.bachelor.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,13 +14,21 @@ import java.util.Set;
 @Service
 public class JournalMapper extends BaseMapper {
 
+    @Autowired
+    UserService userService;
+
     public List<JournalEntryDto> mapJournalEntryEntitiesToDto(Set<JournalEntryEntity> journalEntryEntities) {
 
         List<JournalEntryDto> res = new ArrayList<>();
 
         if (journalEntryEntities != null) {
             for (JournalEntryEntity journalEntryEntity : journalEntryEntities) {
-                res.add(modelMapper.map(journalEntryEntity, JournalEntryDto.class));
+                JournalEntryDto journalEntryDto = modelMapper.map(journalEntryEntity, JournalEntryDto.class);
+                if (journalEntryEntity.getUserId() != null) {
+                    journalEntryDto.setUserDto(userService.readUserDtoById(journalEntryEntity.getUserId()));
+                }
+
+                res.add(journalEntryDto);
             }
         }
         return res;

@@ -1,6 +1,7 @@
 package com.example.bachelor.utility.mapper;
 
 import com.example.bachelor.data.dto.GuardDayDto;
+import com.example.bachelor.data.dto.JournalEntryDto;
 import com.example.bachelor.data.dto.UserGuardingRelationDto;
 import com.example.bachelor.data.entities.GuardDayEntity;
 import com.example.bachelor.data.entities.UserGuardingRelationEntity;
@@ -8,6 +9,9 @@ import com.example.bachelor.services.UserService;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Comparator;
 
 @Service
 public class GuardDayMapper extends BaseMapper {
@@ -31,6 +35,8 @@ public class GuardDayMapper extends BaseMapper {
 
             guardDayDto = modelMapper.map(guardDayEntity, GuardDayDto.class);
             guardDayDto.setJournalEntries(journalMapper.mapJournalEntryEntitiesToDto(guardDayEntity.getJournalEntries()));
+
+            guardDayDto.getJournalEntries().sort((o1, o2) -> o2.getCreation().compareTo(o1.getCreation()));
         }
 
         return guardDayDto;

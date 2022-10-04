@@ -29,11 +29,23 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 
+@Service
 public class WeatherAPI {
 
 
+    public WeatherApiResult getCurrentWeatherData() {
+        WeatherApiResult weatherApiResult = null;
+        try {
+            weatherApiResult = timelineRequestHttpClient();
+        } catch(Exception e) {
+            //TODO log exception
+        }
+
+        return weatherApiResult;
+    }
 
     public static WeatherApiResult timelineRequestHttpClient() throws Exception {
         //set up the end point
@@ -114,6 +126,7 @@ public class WeatherAPI {
         weatherApiResult.setPrecip(currentConditions.getDouble("precip"));
         weatherApiResult.setTemp(currentConditions.getDouble("temp"));
         weatherApiResult.setWindspeed(currentConditions.getDouble("windspeed"));
+        weatherApiResult.setConditions(currentConditions.getString("conditions"));
 
         return weatherApiResult;
 

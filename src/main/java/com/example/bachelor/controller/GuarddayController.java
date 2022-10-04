@@ -1,18 +1,22 @@
 package com.example.bachelor.controller;
 
-import com.example.bachelor.data.dto.GuardDayDto;
-import com.example.bachelor.data.dto.UserDto;
-import com.example.bachelor.data.dto.UserGuardingRelationDto;
+import com.example.bachelor.data.dto.*;
+import com.example.bachelor.data.enums.EntryType;
 import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
 import com.example.bachelor.utility.constants.HtmlConstants;
+import com.example.bachelor.utility.helper.JournalHelper;
+import com.example.bachelor.utility.weatherapi.WeatherAPI;
+import com.example.bachelor.utility.weatherapi.WeatherApiResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +25,9 @@ import java.util.List;
 @Controller
 @SessionAttributes({"guarddaydto"})
 public class GuarddayController {
+
+    @Autowired
+    WeatherAPI weatherApi;
 
     @Autowired
     GuardDayService guardDayService;
@@ -63,6 +70,9 @@ public class GuarddayController {
         //TODO: Fehlerbehandlung wenn keiner gefunden wird
         model.addAttribute("guarddaydto", guardDay);
 
+        WeatherApiResult currentWeatherData = weatherApi.getCurrentWeatherData();
+        model.addAttribute("currentWeatherData", currentWeatherData);
+
         //Aktuelle Zeit anhängen
         Date currentTime = new Date();
         model.addAttribute("currentTime", currentTime);
@@ -89,6 +99,9 @@ public class GuarddayController {
 
         if (guardDayDto.getActualStartTime() != null) {
             userGuardingRelationDto.setGuardingStart(new Date());
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.GUARD_BEGIN, null, null, userToSave);
+
+            guardDayDto.getJournalEntries().add(journalEntryDto);
         } else {
             userGuardingRelationDto.setBooked(true);
         }
@@ -98,6 +111,7 @@ public class GuarddayController {
         userGuardingRelationDto.setUserId(userIdToSave);
 
         guardDayService.saveUserGuardingRelationDto(userGuardingRelationDto);
+        guardDayService.saveGuardDayDto(guardDayDto);
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
     }
@@ -106,19 +120,57 @@ public class GuarddayController {
     public String startEndGuardday(Model model,
                                 @ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto) {
 
+        EntryType entryType;
+
         //Wenn noch keine Startzeit gesetzt wurde muss 'Wachstart' gedrückt worden sein
         if (guardDayDto.getActualStartTime() == null) {
             guardDayDto.setActualStartTime(new Date());
+            entryType = EntryType.GUARD_BEGIN;
+
         } else {
             guardDayDto.setActualEndTime(new Date());
+            entryType = EntryType.GUARD_END;
         }
+        WeatherApiResult weatherApiResult = weatherApi.getCurrentWeatherData();
+        JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null);
+
+        JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), entryType, null, null, null);
+        guardDayDto.getJournalEntries().add(journalEntryDto);
+        guardDayDto.getJournalEntries().add(journalEntryDtoWeather);
         guardDayService.saveGuardDayDto(guardDayDto);
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
     }
 
+    @PostMapping("/guardday_execution/saveWatertemp")
+    public String saveWatertemp(Model model,
+                                @ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto,
+                                Authentication authentication) {
 
+        if (guardDayDto.getWaterTemp() == null || guardDayDto.getWaterTemp().isEmpty()) {
+            //TODO: ERROR
+        } else {
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WATER_TEMP, guardDayDto.getWaterTemp(), null, null);
+            guardDayDto.getJournalEntries().add(journalEntryDto);
+            guardDayService.saveGuardDayDto(guardDayDto);
+        }
 
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
 
+    @PostMapping("/guardday_execution/saveJournalEntry")
+    public String saveJournalEntry(@ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto,
+                                Authentication authentication) {
+
+        if (guardDayDto.getJournalDescription() == null || guardDayDto.getJournalDescription().isEmpty()) {
+            //TODO: ERROR
+        } else {
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.DEFAULT, guardDayDto.getJournalDescription(), null, null);
+            guardDayDto.getJournalEntries().add(journalEntryDto);
+            guardDayService.saveGuardDayDto(guardDayDto);
+        }
+
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
 
 }

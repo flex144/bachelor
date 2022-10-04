@@ -11,6 +11,7 @@ public class JournalEntryDto {
     private Long guardDayId;
     private Long journalEntryId;
     private Long userId;
+    private UserDto userDto;
     private EntryType entryType;
     private Date creation;
     private String description;
@@ -40,6 +41,14 @@ public class JournalEntryDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public UserDto getUserDto() {
+        return userDto;
+    }
+
+    public void setUserDto(UserDto userDto) {
+        this.userDto = userDto;
     }
 
     public EntryType getEntryType() {
