@@ -99,7 +99,7 @@ public class GuarddayController {
 
         if (guardDayDto.getActualStartTime() != null) {
             userGuardingRelationDto.setGuardingStart(new Date());
-            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.GUARD_BEGIN, null, null, userToSave);
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_BEGIN, null, null, userToSave);
 
             guardDayDto.getJournalEntries().add(journalEntryDto);
         } else {
