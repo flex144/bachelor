@@ -1,6 +1,9 @@
 package com.example.bachelor.controller;
 
-import com.example.bachelor.data.dto.*;
+import com.example.bachelor.data.dto.GuardDayDto;
+import com.example.bachelor.data.dto.JournalEntryDto;
+import com.example.bachelor.data.dto.UserDto;
+import com.example.bachelor.data.dto.UserGuardingRelationDto;
 import com.example.bachelor.data.enums.EntryType;
 import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
@@ -13,11 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +45,7 @@ public class GuarddayController {
 
     @PostMapping("/guardday_creation")
     public String saveGuardDayCreation(Model model,
-                                       @ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto) {
+                                       @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
         guardDayService.saveGuardDayDto(guardDayDto);
 
@@ -82,7 +81,7 @@ public class GuarddayController {
 
     @PostMapping("/guardday_execution/saveUser")
     public String saveUser(Model model,
-                           @ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto) {
+                           @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
 
         model.addAttribute("guarddaydto", guardDayDto);
@@ -118,7 +117,7 @@ public class GuarddayController {
 
     @PostMapping("/guardday_execution/startEndGuardday")
     public String startEndGuardday(Model model,
-                                @ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto) {
+                                   @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
         EntryType entryType;
 
@@ -144,7 +143,7 @@ public class GuarddayController {
 
     @PostMapping("/guardday_execution/saveWatertemp")
     public String saveWatertemp(Model model,
-                                @ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto,
+                                @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
                                 Authentication authentication) {
 
         if (guardDayDto.getWaterTemp() == null || guardDayDto.getWaterTemp().isEmpty()) {
@@ -159,13 +158,44 @@ public class GuarddayController {
     }
 
     @PostMapping("/guardday_execution/saveJournalEntry")
-    public String saveJournalEntry(@ModelAttribute(name="guarddaydto") GuardDayDto guardDayDto,
-                                Authentication authentication) {
+    public String saveJournalEntry(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
+                                   Authentication authentication) {
 
         if (guardDayDto.getJournalDescription() == null || guardDayDto.getJournalDescription().isEmpty()) {
             //TODO: ERROR
         } else {
             JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.DEFAULT, guardDayDto.getJournalDescription(), null, null);
+            guardDayDto.getJournalEntries().add(journalEntryDto);
+            guardDayService.saveGuardDayDto(guardDayDto);
+        }
+
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
+
+    @RequestMapping(value = "/guardday_execution/deleteUser/{id}")
+    private String deleteUser(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
+                              @PathVariable(name = "id") Long relationId) {
+        System.out.println("Student_Id : " + relationId);
+
+        List<UserGuardingRelationDto> allRelations = new ArrayList<>();
+        allRelations.addAll(guardDayDto.getUserGuardingRelationsBooked());
+        allRelations.addAll(guardDayDto.getUserGuardingRelations());
+
+        UserGuardingRelationDto guardingRelationDto = allRelations.stream().filter(n -> relationId.equals(n.getRelationId())).findFirst().orElse(null);
+
+        if (guardingRelationDto == null) {
+            throw new IllegalStateException("Zu löschende Relation existiert nicht");
+        }
+
+        //Wenn nur gebucht dann löschen wir direkt
+        if (guardingRelationDto.isBooked()) {
+            guardDayService.deleteUserGuardingRelation(guardingRelationDto.getRelationId());
+        } else {
+            //Wachende setzen und speichern
+            guardingRelationDto.setGuardingEnd(new Date());
+            guardDayService.saveUserGuardingRelationDto(guardingRelationDto);
+            //Wachbucheintrag schreiben und speichern
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, guardingRelationDto.getUserDto());
             guardDayDto.getJournalEntries().add(journalEntryDto);
             guardDayService.saveGuardDayDto(guardDayDto);
         }

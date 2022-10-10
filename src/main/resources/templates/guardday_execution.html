@@ -11,6 +11,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
     <style>
         .bootstrap-select .hidden{
             display: none;
@@ -71,6 +73,13 @@
                     </tr>
                     <tr th:each="userBooked : ${guarddaydto.userGuardingRelationsBooked}">
                         <td><span th:text="${userBooked.userDto.firstName + ' ' + userBooked.userDto.lastName}"> Name </span></td>
+                        <td >
+                            <a th:href="@{/guardday_execution/deleteUser/__${userBooked.relationId}__}">
+
+                                <span class="fa fa-trash"></span>
+
+                            </a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -78,17 +87,23 @@
             <div class="col">
                 <table class="table">
                     <thead>
-                    <tr>
-                        <th> Anwesende Helfer </th>
-                    </tr>
+                        <tr>
+                            <th> Anwesende Helfer </th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${guarddaydto.userGuardingRelations.isEmpty()}">
-                        <td colspan="2"> - </td>
-                    </tr>
-                    <tr th:each="userPresent : ${guarddaydto.userGuardingRelations}">
-                        <td><span th:text="${userPresent.userDto.firstName + ' ' + userPresent.userDto.lastName}"> Name </span></td>
-                    </tr>
+                        <tr th:if="${guarddaydto.userGuardingRelations.isEmpty()}">
+                            <td colspan="2"> - </td>
+                        </tr>
+                        <tr th:each="userPresent : ${guarddaydto.userGuardingRelations}">
+                            <td><span th:text="${userPresent.userDto.firstName + ' ' + userPresent.userDto.lastName}"> Name </span></td>
+                            <td >
+                                <a th:href="@{/guardday_execution/deleteUser/__${userPresent.relationId}__}">
+                                    <span class="fa fa-trash"></span>
+
+                                </a>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

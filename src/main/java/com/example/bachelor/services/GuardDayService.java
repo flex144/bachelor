@@ -55,7 +55,7 @@ public class GuardDayService {
 
         guardDayDto.setAllUsers(userService.readAllUserDtos());
         List<UserGuardingRelationDto> allRelations = readUserGuardingRelations(guardDayId);
-        guardDayDto.setUserGuardingRelations(allRelations.stream().filter(n -> !n.isBooked()).collect(Collectors.toList()));
+        guardDayDto.setUserGuardingRelations(allRelations.stream().filter(n -> !n.isBooked() && n.getGuardingEnd() == null).collect(Collectors.toList()));
         guardDayDto.setUserGuardingRelationsBooked(allRelations.stream().filter(n -> n.isBooked()).collect(Collectors.toList()));
 
         return guardDayDto;
@@ -108,6 +108,10 @@ public class GuardDayService {
         readUserGuardingRelationEntities(guardDayId).forEach(n -> result.add(guardDayMapper.mapUserGuardingRelationEntityToDto(n)));
 
         return result;
+    }
+
+    public void deleteUserGuardingRelation(Long relationId) {
+        userGuardingRelationRepository.deleteById(relationId);
     }
 
     private List<UserGuardingRelationDto> filterBookedUserGuardingRelations(List<UserGuardingRelationDto> allRelations,

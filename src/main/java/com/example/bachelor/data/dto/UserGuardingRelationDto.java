@@ -7,6 +7,7 @@ import java.util.List;
 
 public class UserGuardingRelationDto {
 
+    private Long relationId;
     private Long guardDayId;
     private Long userId;
     private UserDto userDto;
@@ -18,6 +19,14 @@ public class UserGuardingRelationDto {
     private boolean booked;
 
     public UserGuardingRelationDto() {
+    }
+
+    public Long getRelationId() {
+        return relationId;
+    }
+
+    public void setRelationId(Long relationId) {
+        this.relationId = relationId;
     }
 
     public Long getGuardDayId() {

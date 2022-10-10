@@ -31,6 +31,14 @@ public class UserGuardingRelationEntity implements Serializable {
     public UserGuardingRelationEntity() {
     }
 
+    public Long getRelationId() {
+        return relationId;
+    }
+
+    public void setRelationId(Long relationId) {
+        this.relationId = relationId;
+    }
+
     public Long getGuardDayId() {
         return guardDayId;
     }

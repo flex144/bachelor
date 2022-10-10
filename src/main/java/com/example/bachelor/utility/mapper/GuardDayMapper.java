@@ -62,7 +62,6 @@ public class GuardDayMapper extends BaseMapper {
         UserGuardingRelationDto dto = null;
 
         if (entity != null) {
-
             dto = modelMapper.map(entity, UserGuardingRelationDto.class);
             if (dto.getUserId() != null) {
                 dto.setUserDto(userService.readUserDtoById(dto.getUserId()));
