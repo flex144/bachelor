@@ -7,4 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface UserGuardingRelationRepository extends CrudRepository<UserGuardingRelationEntity, Long> {
     Iterable<UserGuardingRelationEntity> findUserGuardingRelationEntitiesByGuardDayId(Long guardDayId);
+    Iterable<UserGuardingRelationEntity> findUserGuardingRelationEntitiesByUserId(Long userId);
 }

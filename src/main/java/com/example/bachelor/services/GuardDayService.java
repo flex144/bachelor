@@ -3,6 +3,7 @@ package com.example.bachelor.services;
 import com.example.bachelor.data.dto.GuardDayDto;
 import com.example.bachelor.data.dto.UserDto;
 import com.example.bachelor.data.dto.UserGuardingRelationDto;
+import com.example.bachelor.data.dto.UserStatisticsDto;
 import com.example.bachelor.data.entities.GuardDayEntity;
 import com.example.bachelor.data.entities.JournalEntryEntity;
 import com.example.bachelor.data.entities.UserEntity;
@@ -16,9 +17,12 @@ import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,6 +112,38 @@ public class GuardDayService {
         readUserGuardingRelationEntities(guardDayId).forEach(n -> result.add(guardDayMapper.mapUserGuardingRelationEntityToDto(n)));
 
         return result;
+    }
+
+    public List<UserGuardingRelationDto> readUserGuardingRelationsByUserId(Long userId) {
+        List<UserGuardingRelationDto> result = new ArrayList<>();
+        userGuardingRelationRepository.findUserGuardingRelationEntitiesByUserId(userId).forEach(n -> result.add(guardDayMapper.mapUserGuardingRelationEntityToDto(n)));
+        return result;
+    }
+
+    public UserStatisticsDto getUserStatisticsDto(Long userId) {
+        List<UserGuardingRelationDto> userRelations = readUserGuardingRelationsByUserId(userId).stream().filter(n -> n.getGuardingEnd() != null).collect(Collectors.toList());
+        List<Long> guardingDays = new LinkedList<>();
+
+        long totalSeconds = 0;
+        for (UserGuardingRelationDto relation : userRelations) {
+            System.out.println("Enddatum: " + relation.getGuardingEnd() + ", StartDatum: " + relation.getGuardingStart());
+            long diffInMillies = Math.abs(relation.getGuardingEnd().getTime() - relation.getGuardingStart().getTime());
+            totalSeconds = totalSeconds + TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            guardingDays.add(relation.getGuardDayId());
+        }
+
+        int presentGuardingDays = guardingDays.size();
+
+        UserStatisticsDto statisticsDto = new UserStatisticsDto();
+        statisticsDto.setDaysPresent(presentGuardingDays);
+        statisticsDto.setHours(totalSeconds / 3600);
+        statisticsDto.setMinutes((totalSeconds % 3600) / 60);
+        statisticsDto.setSeconds(totalSeconds % 60);
+        statisticsDto.setTotalSeconds(totalSeconds);
+        statisticsDto.setUserId(userId);
+
+        return statisticsDto;
+
     }
 
     public void deleteUserGuardingRelation(Long relationId) {

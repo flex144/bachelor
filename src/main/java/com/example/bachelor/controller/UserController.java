@@ -2,7 +2,9 @@ package com.example.bachelor.controller;
 
 import com.example.bachelor.data.dto.UserDetailsPrincipal;
 import com.example.bachelor.data.dto.UserDto;
+import com.example.bachelor.data.dto.UserStatisticsDto;
 import com.example.bachelor.data.entities.UserEntity;
+import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
 import com.example.bachelor.utility.constants.HtmlConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private GuardDayService guardDayService;
 
     @GetMapping("/users")
     public String getUsers(Model model) {
@@ -38,6 +43,10 @@ public class UserController {
         }
 
         model.addAttribute("user", userDto);
+
+        UserStatisticsDto userStatisticsDto = guardDayService.getUserStatisticsDto(userDto.getUserId());
+        model.addAttribute("statistics", userStatisticsDto);
+
         return HtmlConstants.USERPROFILE;
     }
 }

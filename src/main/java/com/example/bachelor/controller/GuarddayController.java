@@ -129,6 +129,7 @@ public class GuarddayController {
         } else {
             guardDayDto.setActualEndTime(new Date());
             entryType = EntryType.GUARD_END;
+            endUserRelations(guardDayDto);
         }
         WeatherApiResult weatherApiResult = weatherApi.getCurrentWeatherData();
         JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null);
@@ -139,6 +140,19 @@ public class GuarddayController {
         guardDayService.saveGuardDayDto(guardDayDto);
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
+
+    private void endUserRelations(GuardDayDto guardDayDto) {
+
+        for (UserGuardingRelationDto relation : guardDayDto.getUserGuardingRelations()) {
+            if (relation.getGuardingEnd() == null) {
+                relation.setGuardingEnd(guardDayDto.getActualEndTime());
+                guardDayService.saveUserGuardingRelationDto(relation);
+                JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, relation.getUserDto());
+                guardDayDto.getJournalEntries().add(journalEntryDto);
+            }
+        }
+
     }
 
     @PostMapping("/guardday_execution/saveWatertemp")

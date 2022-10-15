@@ -17,31 +17,35 @@
     <div class="container">
         <table class="table table-striped table-bordered" id="user">
             <tbody>
-            <tr>
-                <th>Benutzer ID</th>
-                <td><p th:text="${user.userId}" style="font-size: 14px"/></td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td><p th:text="${user.email}" style="font-size: 14px"/></td>
-            </tr>
-            <tr>
-                <th>Vorname</th>
-                <td><p th:text="${user.firstName}" style="font-size: 14px" id="firstName"/></td>
-            </tr>
-            <tr>
-                <th>Nachname</th>
-                <td><p th:text="${user.lastName}" style="font-size: 14px" /></td>
-            </tr>
-            <tr>
-                <th>Rolle</th>
-                <td> <p th:text="${user.role}" style="font-size: 14px"/></td>
-            </tr>
-            <tr>
-                <th>Freigeschaltet</th>
-                <td th:if="${user.active}">Ja</td>
-                <td th:unless="${user.isActive()}">Nein</td>
-            </tr>
+                <tr>
+                    <th>Benutzer ID</th>
+                    <td><p th:text="${user.userId}" style="font-size: 14px"/></td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td><p th:text="${user.email}" style="font-size: 14px"/></td>
+                </tr>
+                <tr>
+                    <th>Vorname</th>
+                    <td><p th:text="${user.firstName}" style="font-size: 14px" id="firstName"/></td>
+                </tr>
+                <tr>
+                    <th>Nachname</th>
+                    <td><p th:text="${user.lastName}" style="font-size: 14px" /></td>
+                </tr>
+                <tr>
+                    <th>Rolle</th>
+                    <td> <p th:text="${user.role}" style="font-size: 14px"/></td>
+                </tr>
+                <tr>
+                    <th>Freigeschaltet</th>
+                    <td th:if="${user.active}">Ja</td>
+                    <td th:unless="${user.isActive()}">Nein</td>
+                </tr>
+                <tr>
+                    <th>Statistik</th>
+                    <td> <p th:text="${statistics.toString()}" style="font-size: 14px"/></td>
+                </tr>
             </tbody>
         </table>
     </div>

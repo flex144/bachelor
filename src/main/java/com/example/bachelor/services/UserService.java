@@ -1,18 +1,23 @@
 package com.example.bachelor.services;
 
-import com.example.bachelor.data.dto.UserDetailsPrincipal;
 import com.example.bachelor.data.dto.UserDto;
+import com.example.bachelor.data.dto.UserGuardingRelationDto;
+import com.example.bachelor.data.dto.UserStatisticsDto;
 import com.example.bachelor.data.entities.UserEntity;
 import com.example.bachelor.data.enums.UserRoles;
 import com.example.bachelor.repositories.UserRepository;
 import com.example.bachelor.utility.mapper.UserMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService{
