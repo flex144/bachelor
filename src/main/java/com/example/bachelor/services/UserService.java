@@ -55,6 +55,14 @@ public class UserService{
         return result;
     }
 
+    public void saveUser(UserEntity userEntity) {
+        userRepository.save(userEntity);
+    }
+
+    public void saveUserDto(UserDto userDto) {
+        saveUser(userMapper.mapUserDtoToEntity(userDto));
+    }
+
     public UserEntity createUser(String email, String password) throws IllegalStateException{
         UserEntity user = findUserByEmail(email);
         if (user != null) {
@@ -65,7 +73,7 @@ public class UserService{
         newUserEntity.setEmail(email);
         newUserEntity.setPassword(encode(password));
         newUserEntity.setRole(UserRoles.ROLE_USER);
-        newUserEntity.setActive(true); //TODO: erstmal inaktiv setzen, erst bei Freischaltung durch ADMIN aktiv setzen
+        newUserEntity.setActive(false); //TODO: erstmal inaktiv setzen, erst bei Freischaltung durch ADMIN aktiv setzen
         userRepository.save(newUserEntity);
         return newUserEntity;
     }

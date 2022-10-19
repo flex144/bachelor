@@ -18,30 +18,37 @@
 
 <div class="container">
     <h1>Alle Nutzer</h1>
-    <table class="table">
+    <table id="userTable" class="table">
         <thead>
             <tr>
                 <th> ID </th>
                 <th> Email </th>
-                <th> Passwort </th>
+                <th> Statistik </th>
                 <th> Rolle </th>
+                <th> Aktiv </th>
             </tr>
         </thead>
         <tbody>
             <tr th:if="${users.isEmpty()}">
                 <td colspan="2"> No Books Available </td>
             </tr>
-            <tr th:each="user : ${users}">
+            <tr th:each="user : ${users}"
+                th:onclick="'javascript:rowClicked(\'' + ${user.userId} + '\');'">
                 <td><span th:text="${user.userId}"> ID </span></td>
                 <td><span th:text="${user.email}"> Email </span></td>
-                <td><span th:text="${user.password}"> Passwort </span></td>
+                <td><span th:text="${statisticsmap.get(user.userId).toString()}"> Statistik </span></td>
                 <td><span th:text="${user.role}"> Rolle </span></td>
+                <td><span th:text="${user.active}"> Aktiv </span></td>
             </tr>
         </tbody>
     </table>
 </div>
 
-
+<script>
+    function rowClicked(value) {
+        location.href = "../user/" + value;
+    }
+</script>
 
 </body>
 </html>

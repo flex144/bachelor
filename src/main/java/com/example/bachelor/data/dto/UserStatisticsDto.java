@@ -75,7 +75,7 @@ public class UserStatisticsDto {
         StringBuilder sb = new StringBuilder();
 
         if (hours == 0 && minutes == 0 && seconds == 0) {
-            sb.append("Um Statistiken freizuschalten müssen sie an einem Wachtag teilnehmen!");
+            sb.append(" - ");
         } else {
             sb.append(hours + " ");
             sb.append("Stunden, ");

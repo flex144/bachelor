@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -48,6 +49,16 @@
                 </tr>
             </tbody>
         </table>
+
+        <form sec:authorize="hasRole('ROLE_ADMIN')"
+              th:if="${not user.active}"
+              th:action="@{/activateUser}"
+              th:object="${user}" method="post">
+
+            <button class="btn btn-primary" type="submit">Nutzer aktivieren</button>
+
+
+        </form>
     </div>
 
 </body>

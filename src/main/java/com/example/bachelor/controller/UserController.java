@@ -8,15 +8,20 @@ import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
 import com.example.bachelor.utility.constants.HtmlConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.attribute.UserPrincipal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
+@SessionAttributes({"user"})
 public class UserController {
 
     @Autowired
@@ -27,8 +32,55 @@ public class UserController {
 
     @GetMapping("/users")
     public String getUsers(Model model) {
-        model.addAttribute("users", userService.readAllUsers());
+
+        List<UserEntity> allUsers = userService.readAllUsers();
+        model.addAttribute("users", allUsers);
+
+        Map<Long, UserStatisticsDto> userStatisticsMap = new HashMap<>();
+        for (UserEntity user : allUsers) {
+            userStatisticsMap.put(user.getUserId(), guardDayService.getUserStatisticsDto(user.getUserId()));
+        }
+        model.addAttribute("statisticsmap", userStatisticsMap);
+
         return HtmlConstants.USER_OVERVIEW;
+    }
+
+    @PreAuthorize("#query == principal.getUserId().toString() ||" +
+            "hasRole('ROLE_ADMIN')")
+    @GetMapping(value = "/user/{query}")
+    public String searchUser(@PathVariable("query") String query, Model model) {
+
+        if (!isLong(query)) {
+            throw new IllegalArgumentException("id  muss nummer sein");
+        }
+        UserDto user = userService.readUserDtoById(Long.parseLong(query));
+
+        if (user == null) {
+            throw new IllegalStateException("User not found");
+        }
+
+        model.addAttribute("user", user);
+
+        UserStatisticsDto userStatisticsDto = guardDayService.getUserStatisticsDto(user.getUserId());
+        model.addAttribute("statistics", userStatisticsDto);
+
+        return HtmlConstants.USERPROFILE;
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(value = "/activateUser")
+    public String activateUser(@ModelAttribute("user") UserDto user, Model model) {
+
+        user.setActive(true);
+
+        userService.saveUserDto(user);
+
+        model.addAttribute("user", user);
+
+        UserStatisticsDto userStatisticsDto = guardDayService.getUserStatisticsDto(user.getUserId());
+        model.addAttribute("statistics", userStatisticsDto);
+
+        return HtmlConstants.REDIRECT + HtmlConstants.USERPROFILE;
     }
 
     @GetMapping("/profile")
@@ -48,5 +100,14 @@ public class UserController {
         model.addAttribute("statistics", userStatisticsDto);
 
         return HtmlConstants.USERPROFILE;
+    }
+
+    static boolean isLong(String toCheck) {
+        try {
+            Long.parseLong(toCheck);
+        } catch (NumberFormatException numberFormatException) {
+            return false;
+        }
+        return true;
     }
 }
