@@ -43,7 +43,14 @@
             </div>
         </div>
         <div class="col">
-            <img th:src="'../images/WeatherIcons/' + ${currentWeatherData.icon} + '.png'"/>
+            <div class="row">
+                <div class="col-1">
+                    <img th:src="'../images/WeatherIcons/' + ${currentWeatherData.icon} + '.png'"/>
+                </div>
+                <div class="col-11">
+                    <p th:text="${currentWeatherData.getTemp()} + '°C'"></p>
+                </div>
+            </div>
             <form th:action="@{/guardday_execution/saveWatertemp}" th:object="${guarddaydto}" method="post">
                 <label>Wassertemp</label>
                 <input th:field="*{waterTemp}">
@@ -130,7 +137,7 @@
 
     <form th:action="@{/guardday_execution/saveJournalEntry}" th:object="${guarddaydto}" method="post">
 
-        <label for="textArea">Example textarea</label>
+        <label for="textArea">Wachbuch Eintrag</label>
         <textarea class="form-control" id="textArea" rows="3" th:field="*{journalDescription}"></textarea>
         <button class="btn btn-primary" type="submit">Eintrag speichern</button>
 
