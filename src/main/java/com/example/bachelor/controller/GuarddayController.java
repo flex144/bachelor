@@ -187,7 +187,7 @@ public class GuarddayController {
     }
 
     @RequestMapping(value = "/guardday_execution/deleteUser/{id}")
-    private String deleteUser(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
+    public String deleteUser(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
                               @PathVariable(name = "id") Long relationId) {
         System.out.println("Student_Id : " + relationId);
 
@@ -213,6 +213,21 @@ public class GuarddayController {
             guardDayDto.getJournalEntries().add(journalEntryDto);
             guardDayService.saveGuardDayDto(guardDayDto);
         }
+
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
+
+    @PostMapping("/guardday_execution/changeIlsActivity")
+    public String changeIlsActivity(Model model,
+                                    @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
+
+        //Wenn ILS aktiv ist, setzen wir es auf inaktiv
+        EntryType entryType = guardDayDto.isIlsActive() ? EntryType.ILS_INACTIVE : EntryType.ILS_ACTIVE;
+
+        JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), entryType, null, null, null);
+        guardDayDto.getJournalEntries().add(journalEntryDto);
+        guardDayDto.setIlsActive(!guardDayDto.isIlsActive());
+        guardDayService.saveGuardDayDto(guardDayDto);
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
     }

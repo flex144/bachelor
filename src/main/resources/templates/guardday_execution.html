@@ -125,13 +125,22 @@
         <button class="btn btn-primary" type="submit">Helfer speichern</button>
     </form>
 
+    <p class="mt-2"></p>
+
     <!-- Buttons -->
-    <form th:action="@{/guardday_execution/startEndGuardday}" th:object="${guarddaydto}" method="post">
+    <div class="row">
+        <div class="col-2">
+            <form th:action="@{/guardday_execution/startEndGuardday}" th:object="${guarddaydto}" method="post">
+                <button class="btn btn-primary" type="submit" th:text="${guarddaydto.actualStartTime == null} ? 'Wachbeginn' : 'Wachende'"></button>
+            </form>
+        </div>
+        <div class="col-2">
+            <form th:action="@{/guardday_execution/changeIlsActivity}" th:object="${guarddaydto}" method="post">
+                <button class="btn btn-primary" type="submit" th:text="${guarddaydto.ilsActive} ? 'Abmeldung ILS' : 'Anmeldung ILS'"></button>
+            </form>
+        </div>
+    </div>
 
-        <button class="btn btn-primary" type="submit" th:text="${guarddaydto.actualStartTime == null} ? 'Wachbeginn' : 'Wachende'"></button>
-
-
-    </form>
 
     <p class="mt-2"></p>
 
@@ -139,6 +148,7 @@
 
         <label for="textArea">Wachbuch Eintrag</label>
         <textarea class="form-control" id="textArea" rows="3" th:field="*{journalDescription}"></textarea>
+        <p class="mt-2"></p>
         <button class="btn btn-primary" type="submit">Eintrag speichern</button>
 
     </form>

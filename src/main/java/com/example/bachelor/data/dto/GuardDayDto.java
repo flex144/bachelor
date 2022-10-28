@@ -29,8 +29,10 @@ public class GuardDayDto {
     private List<UserGuardingRelationDto> userGuardingRelationsBooked;
     //Liste mit anwesenden Helfern
     private List<UserGuardingRelationDto> userGuardingRelations;
+    private boolean ilsActive;
 
     public GuardDayDto() {
+        ilsActive = false;
     }
 
     public Long getGuardDayId() {
@@ -141,5 +143,13 @@ public class GuardDayDto {
 
     public void setUserGuardingRelationsBooked(List<UserGuardingRelationDto> userGuardingRelationsBooked) {
         this.userGuardingRelationsBooked = userGuardingRelationsBooked;
+    }
+
+    public boolean isIlsActive() {
+        return ilsActive;
+    }
+
+    public void setIlsActive(boolean ilsActive) {
+        this.ilsActive = ilsActive;
     }
 }

@@ -8,5 +8,7 @@ public enum EntryType {
     USER_GUARD_BEGIN,
     USER_GUARD_END,
     GUARD_BEGIN,
-    GUARD_END
+    GUARD_END,
+    ILS_ACTIVE,
+    ILS_INACTIVE
 }

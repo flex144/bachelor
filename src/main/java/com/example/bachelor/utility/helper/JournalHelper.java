@@ -18,6 +18,7 @@ public final class JournalHelper {
                                                      String description, WeatherApiResult weatherApiResult,
                                                      UserDto userBooked) {
         JournalEntryDto journalEntryDto = new JournalEntryDto();
+        //TODO: Hier NutzerId als Parameter übergeben, wenn null dann aus Principal
         UserDetailsPrincipal principal = (UserDetailsPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         journalEntryDto.setUserId(principal.getUserId());
         journalEntryDto.setGuardDayId(guardDayId);
@@ -52,6 +53,10 @@ public final class JournalHelper {
                         + weatherApiResult.getWindspeed() + " kmh, Regenwarscheinlichkeit: "
                         + weatherApiResult.getPrecip() + " %, Luftfeuchte: " + weatherApiResult.getHumidity()
                         + " %, Beschreibung: " + weatherApiResult.getConditions();
+            case ILS_ACTIVE:
+                return "Anmeldung ILS";
+            case ILS_INACTIVE:
+                return "Abmeldung ILS";
             default:
                 return "";
         }

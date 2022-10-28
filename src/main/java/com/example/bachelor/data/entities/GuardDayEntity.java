@@ -31,6 +31,8 @@ public class GuardDayEntity {
     @OneToMany(mappedBy = "guardDay", fetch = FetchType.EAGER)
     private Set<JournalEntryEntity> journalEntries;
 
+    private boolean ilsActive;
+
     public GuardDayEntity() {
     }
 
@@ -88,5 +90,13 @@ public class GuardDayEntity {
 
     public void setJournalEntries(Set<JournalEntryEntity> journalEntries) {
         this.journalEntries = journalEntries;
+    }
+
+    public boolean isIlsActive() {
+        return ilsActive;
+    }
+
+    public void setIlsActive(boolean ilsActive) {
+        this.ilsActive = ilsActive;
     }
 }
