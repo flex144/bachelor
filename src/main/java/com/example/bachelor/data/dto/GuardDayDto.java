@@ -30,6 +30,7 @@ public class GuardDayDto {
     //Liste mit anwesenden Helfern
     private List<UserGuardingRelationDto> userGuardingRelations;
     private boolean ilsActive;
+    private String freetextUser;
 
     public GuardDayDto() {
         ilsActive = false;
@@ -151,5 +152,13 @@ public class GuardDayDto {
 
     public void setIlsActive(boolean ilsActive) {
         this.ilsActive = ilsActive;
+    }
+
+    public String getFreetextUser() {
+        return freetextUser;
+    }
+
+    public void setFreetextUser(String freetextUser) {
+        this.freetextUser = freetextUser;
     }
 }

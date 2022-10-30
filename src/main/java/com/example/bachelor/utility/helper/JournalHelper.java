@@ -41,9 +41,17 @@ public final class JournalHelper {
             case WATER_TEMP:
                 return "Wassertemperatur: " + description + "° C";
             case USER_GUARD_BEGIN:
-                return "Wachanmeldung " + userBooked.getFirstName() + " " + userBooked.getLastName();
+                if (userBooked != null) {
+                    return "Wachanmeldung " + userBooked.getFirstName() + " " + userBooked.getLastName();
+                } else {
+                    return "Wachanmeldung " + description;
+                }
             case USER_GUARD_END:
-                return "Wachabmeldung " + userBooked.getFirstName() + " " + userBooked.getLastName();
+                if (userBooked != null) {
+                    return "Wachabmeldung " + userBooked.getFirstName() + " " + userBooked.getLastName();
+                } else {
+                    return "Wachabmeldung " + description;
+                }
             case GUARD_BEGIN:
                 return "Wachstart";
             case GUARD_END:

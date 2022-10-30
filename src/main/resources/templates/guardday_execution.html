@@ -79,7 +79,8 @@
                         <td colspan="2"> - </td>
                     </tr>
                     <tr th:each="userBooked : ${guarddaydto.userGuardingRelationsBooked}">
-                        <td><span th:text="${userBooked.userDto.firstName + ' ' + userBooked.userDto.lastName}"> Name </span></td>
+                        <td th:if="${userBooked.userDto ne null}"><span th:text="${userBooked.userDto.firstName + ' ' + userBooked.userDto.lastName}"> Name </span></td>
+                        <td th:if="${!#strings.isEmpty(userBooked.userFreetext)}"><span th:text="${userBooked.userFreetext}"> Name </span></td>
                         <td >
                             <a th:href="@{/guardday_execution/deleteUser/__${userBooked.relationId}__}">
 
@@ -103,7 +104,8 @@
                             <td colspan="2"> - </td>
                         </tr>
                         <tr th:each="userPresent : ${guarddaydto.userGuardingRelations}">
-                            <td><span th:text="${userPresent.userDto.firstName + ' ' + userPresent.userDto.lastName}"> Name </span></td>
+                            <td th:if="${userPresent.userDto ne null}"><span th:text="${userPresent.userDto.firstName + ' ' + userPresent.userDto.lastName}"> Name </span></td>
+                            <td th:if="${!#strings.isEmpty(userPresent.userFreetext)}"><span th:text="${userPresent.userFreetext}"> Name </span></td>
                             <td >
                                 <a th:href="@{/guardday_execution/deleteUser/__${userPresent.relationId}__}">
                                     <span class="fa fa-trash"></span>
@@ -116,13 +118,21 @@
             </div>
         </div>
 
-        <select th:field="*{userToSave}" class="selectpicker" data-live-search="true">
-            <option value="0">select option</option>
-            <option th:each="user : ${guarddaydto.allUsers}" th:value="${user.userId}"
-                    th:text="${user.firstName + ' ' + user.lastName}"></option>
-        </select>
-
-        <button class="btn btn-primary" type="submit">Helfer speichern</button>
+        <div class="row">
+            <div class="col-3">
+                <select th:field="*{userToSave}" class="selectpicker" data-live-search="true">
+                    <option value="">Nutzer wählen</option>
+                    <option th:each="user : ${guarddaydto.allUsers}" th:value="${user.userId}"
+                            th:text="${user.firstName + ' ' + user.lastName}"></option>
+                </select>
+            </div>
+            <div class="col-2">
+                <input th:field="*{freetextUser}" class="form-control" id="userText" placeholder="Nutzer Eingabe">
+            </div>
+            <div class="col-2">
+                <button class="btn btn-primary" type="submit">Helfer speichern</button>
+            </div>
+        </div>
     </form>
 
     <p class="mt-2"></p>

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @SessionAttributes({"guarddaydto"})
@@ -85,12 +86,32 @@ public class GuarddayController {
 
 
         model.addAttribute("guarddaydto", guardDayDto);
-        if (guardDayDto.getUserToSave() == null) {
+        if (guardDayDto.getUserToSave() == null && (guardDayDto.getFreetextUser() == null || guardDayDto.getFreetextUser().isEmpty())) {
+            //TODO: throw error
+        } else if (guardDayDto.getUserToSave() != null && guardDayDto.getFreetextUser() != null && !guardDayDto.getFreetextUser().isEmpty()) {
             //TODO: throw error
         }
 
-        Long userIdToSave = guardDayDto.getUserToSave();
+        UserGuardingRelationDto relationDto = null;
+
+        if (guardDayDto.getUserToSave() != null) {
+            relationDto = createRegisteredUserRelation(guardDayDto);
+        }
+
+        if (guardDayDto.getFreetextUser() != null && !guardDayDto.getFreetextUser().isEmpty()) {
+            relationDto = createFreetextUserRelation(guardDayDto);
+        }
+
+        guardDayService.saveUserGuardingRelationDto(relationDto);
+        guardDayService.saveGuardDayDto(guardDayDto);
+
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
+
+    private UserGuardingRelationDto createRegisteredUserRelation(GuardDayDto guardDayDto) {
         UserGuardingRelationDto userGuardingRelationDto = new UserGuardingRelationDto();
+
+        Long userIdToSave = guardDayDto.getUserToSave();
         UserDto userToSave = guardDayDto.getAllUsers().stream().filter(n -> n.getUserId().equals(userIdToSave)).findFirst().orElse(null);
         if (userToSave == null) {
             //TODO: throw error
@@ -109,10 +130,26 @@ public class GuarddayController {
         userGuardingRelationDto.setUserDto(userToSave);
         userGuardingRelationDto.setUserId(userIdToSave);
 
-        guardDayService.saveUserGuardingRelationDto(userGuardingRelationDto);
-        guardDayService.saveGuardDayDto(guardDayDto);
+        return userGuardingRelationDto;
+    }
 
-        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    private UserGuardingRelationDto createFreetextUserRelation(GuardDayDto guardDayDto) {
+        UserGuardingRelationDto userGuardingRelationDto = new UserGuardingRelationDto();
+
+        userGuardingRelationDto.setUserFreetext(guardDayDto.getFreetextUser());
+
+        if (guardDayDto.getActualStartTime() != null) {
+            userGuardingRelationDto.setGuardingStart(new Date());
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_BEGIN, guardDayDto.getFreetextUser(), null, null);
+
+            guardDayDto.getJournalEntries().add(journalEntryDto);
+        } else {
+            userGuardingRelationDto.setBooked(true);
+        }
+
+        userGuardingRelationDto.setGuardDayId(guardDayDto.getGuardDayId());
+
+        return userGuardingRelationDto;
     }
 
     @PostMapping("/guardday_execution/startEndGuardday")
@@ -189,7 +226,6 @@ public class GuarddayController {
     @RequestMapping(value = "/guardday_execution/deleteUser/{id}")
     public String deleteUser(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
                               @PathVariable(name = "id") Long relationId) {
-        System.out.println("Student_Id : " + relationId);
 
         List<UserGuardingRelationDto> allRelations = new ArrayList<>();
         allRelations.addAll(guardDayDto.getUserGuardingRelationsBooked());
@@ -209,7 +245,12 @@ public class GuarddayController {
             guardingRelationDto.setGuardingEnd(new Date());
             guardDayService.saveUserGuardingRelationDto(guardingRelationDto);
             //Wachbucheintrag schreiben und speichern
-            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, guardingRelationDto.getUserDto());
+            JournalEntryDto journalEntryDto;
+            if (guardingRelationDto.getUserId() != null) {
+                journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, guardingRelationDto.getUserDto());
+            } else {
+                journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, guardingRelationDto.getUserFreetext(), null, null);
+            }
             guardDayDto.getJournalEntries().add(journalEntryDto);
             guardDayService.saveGuardDayDto(guardDayDto);
         }
