@@ -1,9 +1,6 @@
 package com.example.bachelor.controller;
 
-import com.example.bachelor.data.dto.GuardDayDto;
-import com.example.bachelor.data.dto.JournalEntryDto;
-import com.example.bachelor.data.dto.UserDto;
-import com.example.bachelor.data.dto.UserGuardingRelationDto;
+import com.example.bachelor.data.dto.*;
 import com.example.bachelor.data.enums.EntryType;
 import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@SessionAttributes({"guarddaydto"})
+@SessionAttributes({"guarddaydto", "guarddayseries"})
 public class GuarddayController {
 
     @Autowired
@@ -41,14 +38,25 @@ public class GuarddayController {
         GuardDayDto guardDayDto = new GuardDayDto();
         model.addAttribute("guarddaydto", guardDayDto);
 
+        GuardDaySeriesDto guardDaySeriesDto = new GuardDaySeriesDto();
+        model.addAttribute("guarddayseries", guardDaySeriesDto);
+
         return HtmlConstants.GUARDDAY_CREATION;
     }
 
-    @PostMapping("/guardday_creation")
+    @PostMapping("/guardday_creation_single")
     public String saveGuardDayCreation(Model model,
                                        @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
         guardDayService.saveGuardDayDto(guardDayDto);
+
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_OVERVIEW;
+    }
+
+    @PostMapping("/guardday_creation_series")
+    public String saveGuardDayCreationSeries(Model model,
+                                             @ModelAttribute(name = "guarddayseries") GuardDaySeriesDto guardDaySeries) {
+
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_OVERVIEW;
     }

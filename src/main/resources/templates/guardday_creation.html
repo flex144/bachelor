@@ -15,7 +15,7 @@
     <div th:replace="fragments/header :: navbar"></div>
 
     <div class="container">
-        <form th:action="@{/guardday_creation}" th:object="${guarddaydto}" method="post">
+        <form th:action="@{/guardday_creation_single}" th:object="${guarddaydto}" method="post">
             <table class="table table-striped table-bordered" id="guardday">
                 <tbody>
                 <tr>

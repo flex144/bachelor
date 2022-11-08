@@ -1,9 +1,6 @@
 package com.example.bachelor.services;
 
-import com.example.bachelor.data.dto.GuardDayDto;
-import com.example.bachelor.data.dto.UserDto;
-import com.example.bachelor.data.dto.UserGuardingRelationDto;
-import com.example.bachelor.data.dto.UserStatisticsDto;
+import com.example.bachelor.data.dto.*;
 import com.example.bachelor.data.entities.GuardDayEntity;
 import com.example.bachelor.data.entities.JournalEntryEntity;
 import com.example.bachelor.data.entities.UserEntity;
@@ -17,13 +14,15 @@ import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static java.time.DayOfWeek.SUNDAY;
 
 @Service
 public class GuardDayService {
@@ -154,5 +153,53 @@ public class GuardDayService {
                                                                             boolean booked) {
 
         return allRelations.stream().filter(n -> n.isBooked() == booked).collect(Collectors.toList());
+    }
+
+    public void saveGuardDaySeries(GuardDaySeriesDto guardDaySeriesDto) {
+
+        if (guardDaySeriesDto == null || guardDaySeriesDto.noDaySet()) {
+            throw new IllegalStateException("guard day may not be null or empty!");
+        }
+
+        LocalDate startDate = convertToLocalDate(guardDaySeriesDto.getStartDate());
+        LocalDate endDate = convertToLocalDate(guardDaySeriesDto.getEndDate());
+
+        List<GuardDayDto> createdGuardDays = new ArrayList<>();
+        List<DayOfWeek> daysOfWeek = guardDaySeriesDto.getDaysOfWeek();
+
+        while(startDate.isBefore(endDate)) {
+
+            if (daysOfWeek.contains(startDate.getDayOfWeek())) {
+                createdGuardDays.add(createGuardDayDtoFromSeries(startDate, guardDaySeriesDto));
+            }
+
+            startDate = startDate.plusDays(1);
+        }
+
+        for (GuardDayDto guardDayDto : createdGuardDays) {
+            saveGuardDayDto(guardDayDto);
+        }
+    }
+
+    private GuardDayDto createGuardDayDtoFromSeries(LocalDate localDate, GuardDaySeriesDto guardDaySeriesDto) {
+        GuardDayDto guardDayDto = new GuardDayDto();
+
+        guardDayDto.setGuardingDate(convertToDate(localDate));
+        guardDayDto.setStartTime(guardDaySeriesDto.getStartTime());
+        guardDayDto.setEndTime(guardDaySeriesDto.getEndTime());
+
+        return guardDayDto;
+    }
+
+    public Date convertToDate(LocalDate dateToConvert) {
+        return java.util.Date.from(dateToConvert.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
+
+    public LocalDate convertToLocalDate(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
     }
 }
