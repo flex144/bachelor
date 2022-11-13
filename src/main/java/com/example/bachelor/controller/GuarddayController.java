@@ -57,6 +57,7 @@ public class GuarddayController {
     public String saveGuardDayCreationSeries(Model model,
                                              @ModelAttribute(name = "guarddayseries") GuardDaySeriesDto guardDaySeries) {
 
+        guardDayService.saveGuardDaySeries(guardDaySeries);
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_OVERVIEW;
     }

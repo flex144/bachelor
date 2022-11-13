@@ -13,9 +13,15 @@
 
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
+    <link rel="stylesheet" type="text/css" href="../static/css/bachelorstyle.css" media="screen" />
+
     <style>
         .bootstrap-select .hidden{
             display: none;
+        }
+
+        h1 {
+            color: #008ccd;
         }
     </style>
 
@@ -44,11 +50,13 @@
         </div>
         <div class="col">
             <div class="row">
-                <div class="col-1">
-                    <img th:src="'../images/WeatherIcons/' + ${currentWeatherData.icon} + '.png'"/>
+                <div class="col-2">
+                    <img th:if="${currentWeatherData ne null}" th:src="'../images/WeatherIcons/' + ${currentWeatherData.icon} + '.png'"/>
+                    <img th:if="${currentWeatherData eq null}" src="../static/images/WeatherIcons/notfound.png">
                 </div>
-                <div class="col-11">
-                    <p th:text="${currentWeatherData.getTemp()} + '°C'"></p>
+                <div class="col-10">
+                    <p th:if="${currentWeatherData ne null}" th:text="${currentWeatherData.getTemp()} + '°C'"></p>
+                    <p th:if="${currentWeatherData eq null}" th:text="'Wetterdaten konnten nicht geladen werden.'"></p>
                 </div>
             </div>
             <form th:action="@{/guardday_execution/saveWatertemp}" th:object="${guarddaydto}" method="post">

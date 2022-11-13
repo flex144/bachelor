@@ -63,15 +63,18 @@ public class UserService{
         saveUser(userMapper.mapUserDtoToEntity(userDto));
     }
 
-    public UserEntity createUser(String email, String password) throws IllegalStateException{
-        UserEntity user = findUserByEmail(email);
+    public UserEntity createUser(UserDto userDto) throws IllegalStateException{
+        UserEntity user = findUserByEmail(userDto.getEmail());
         if (user != null) {
-            throw new IllegalStateException("User with Email already present!");
+            throw new IllegalStateException("Nutzer mit Email '" + user.getEmail() + "' existiert bereits!");
         }
 
         UserEntity newUserEntity = new UserEntity();
-        newUserEntity.setEmail(email);
-        newUserEntity.setPassword(encode(password));
+        newUserEntity.setEmail(userDto.getEmail());
+        newUserEntity.setPassword(encode(userDto.getPassword()));
+        newUserEntity.setFirstName(userDto.getFirstName());
+        newUserEntity.setLastName(userDto.getLastName());
+        newUserEntity.setLocalBranch(userDto.getLocalbranch());
         newUserEntity.setRole(UserRoles.ROLE_USER);
         newUserEntity.setActive(false); //TODO: erstmal inaktiv setzen, erst bei Freischaltung durch ADMIN aktiv setzen
         userRepository.save(newUserEntity);

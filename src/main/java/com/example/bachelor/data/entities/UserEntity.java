@@ -21,6 +21,7 @@ public class UserEntity {
     private String password;
     @Column(nullable=false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean active;
+    private String localBranch;
 
     public UserEntity() {
     }
@@ -79,6 +80,14 @@ public class UserEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getLocalBranch() {
+        return localBranch;
+    }
+
+    public void setLocalBranch(String localBranch) {
+        this.localBranch = localBranch;
     }
 
     @Override

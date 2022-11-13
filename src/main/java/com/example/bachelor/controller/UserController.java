@@ -33,11 +33,11 @@ public class UserController {
     @GetMapping("/users")
     public String getUsers(Model model) {
 
-        List<UserEntity> allUsers = userService.readAllUsers();
+        List<UserDto> allUsers = userService.readAllUserDtos();
         model.addAttribute("users", allUsers);
 
         Map<Long, UserStatisticsDto> userStatisticsMap = new HashMap<>();
-        for (UserEntity user : allUsers) {
+        for (UserDto user : allUsers) {
             userStatisticsMap.put(user.getUserId(), guardDayService.getUserStatisticsDto(user.getUserId()));
         }
         model.addAttribute("statisticsmap", userStatisticsMap);
@@ -80,7 +80,7 @@ public class UserController {
         UserStatisticsDto userStatisticsDto = guardDayService.getUserStatisticsDto(user.getUserId());
         model.addAttribute("statistics", userStatisticsDto);
 
-        return HtmlConstants.REDIRECT + HtmlConstants.USERPROFILE;
+        return HtmlConstants.REDIRECT + "user/" + user.getUserId();
     }
 
     @GetMapping("/profile")

@@ -6,10 +6,12 @@ import com.example.bachelor.utility.constants.HtmlConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,15 +34,20 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public String registerUser(@ModelAttribute("user") UserDto userDto, Model model,
-                               RedirectAttributes redirectAttributes) {
+    public ModelAndView registerUser(@ModelAttribute("user") UserDto userDto, ModelMap model) {
 
         String errorMessage = "";
 
-        try {
-            userService.createUser(userDto.getEmail(), userDto.getPassword());
-        } catch (IllegalStateException e ) { //TODO: Create Own Excption
-            errorMessage = e.getLocalizedMessage();
+        if (userDto.getPassword().equals(userDto.getConfirmationPassword())) {
+
+
+            try {
+                userService.createUser(userDto);
+            } catch (IllegalStateException e) { //TODO: Create Own Excption
+                errorMessage = e.getLocalizedMessage();
+            }
+        } else {
+            errorMessage = "Passwörter stimmen nicht überein!";
         }
 
         if (errorMessage.equals("")) {
@@ -61,10 +68,11 @@ public class RegistrationController {
 
             emailSenderService.sendEmail(mailMessage);
             redirectAttributes.addFlashAttribute("email", userDto.getEmail());*/
-            return "redirect:/login";
+            model.addAttribute("success", "success");
+            return new ModelAndView("redirect:/login", model);
         } else {
             model.addAttribute("errorMessage", errorMessage);
-            return HtmlConstants.REGISTRATION;
+            return new ModelAndView(HtmlConstants.REGISTRATION, model);
         }
     }
 

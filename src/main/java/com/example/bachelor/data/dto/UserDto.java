@@ -16,6 +16,7 @@ public class UserDto {
     private String password;
     private String confirmationPassword;
     private boolean active;
+    private String localbranch;
 
     public UserDto() {
     }
@@ -76,5 +77,30 @@ public class UserDto {
         this.active = active;
     }
 
+    public String getConfirmationPassword() {
+        return confirmationPassword;
+    }
 
+    public void setConfirmationPassword(String confirmationPassword) {
+        this.confirmationPassword = confirmationPassword;
+    }
+
+    public String getLocalbranch() {
+        return localbranch;
+    }
+
+    public void setLocalbranch(String localbranch) {
+        this.localbranch = localbranch;
+    }
+
+    public String getUserRoleString() {
+        switch (getRole()) {
+            case ROLE_USER:
+                return "User";
+            case ROLE_ADMIN:
+                return "Admin";
+            default:
+                throw new IllegalStateException("Nutzer hat keine oder unbekannte Rolle!");
+        }
+    }
 }

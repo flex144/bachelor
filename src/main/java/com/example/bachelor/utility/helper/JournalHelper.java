@@ -57,10 +57,15 @@ public final class JournalHelper {
             case GUARD_END:
                 return "Wachende";
             case WEATHER:
-                return "Wetter: Temperatur: " + weatherApiResult.getTemp() + "° C, Windgeschwindigkeit: "
-                        + weatherApiResult.getWindspeed() + " kmh, Regenwarscheinlichkeit: "
-                        + weatherApiResult.getPrecip() + " %, Luftfeuchte: " + weatherApiResult.getHumidity()
-                        + " %, Beschreibung: " + weatherApiResult.getConditions();
+                if (weatherApiResult != null) {
+                    return "Wetter: Temperatur: " + weatherApiResult.getTemp() + "° C, Windgeschwindigkeit: "
+                            + weatherApiResult.getWindspeed() + " kmh, Regenwarscheinlichkeit: "
+                            + weatherApiResult.getPrecip() + " %, Luftfeuchte: " + weatherApiResult.getHumidity()
+                            + " %, Beschreibung: " + weatherApiResult.getConditions();
+                } else {
+                    return "Wetterdaten im Moment nicht verfügbar.";
+                }
+
             case ILS_ACTIVE:
                 return "Anmeldung ILS";
             case ILS_INACTIVE:
