@@ -69,7 +69,14 @@ public class GuardDayService {
         Iterable<GuardDayEntity> guardDays = guardDayRepository.findAll();
         List<GuardDayDto> guardDayDtos = new ArrayList<>();
 
-        guardDays.forEach(g -> guardDayDtos.add(guardDayMapper.mapGuardDayEntityToDto(g)));
+        for (GuardDayEntity guardDayEntity : guardDays) {
+            GuardDayDto guardDayDto = guardDayMapper.mapGuardDayEntityToDto(guardDayEntity);
+            List<UserGuardingRelationDto> allRelations = readUserGuardingRelations(guardDayDto.getGuardDayId());
+            guardDayDto.setUserGuardingRelations(allRelations.stream().filter(n -> !n.isBooked() && n.getGuardingEnd() == null).collect(Collectors.toList()));
+            guardDayDto.setUserGuardingRelationsBooked(allRelations.stream().filter(n -> n.isBooked()).collect(Collectors.toList()));
+
+            guardDayDtos.add(guardDayDto);
+        }
 
         return guardDayDtos;
     }

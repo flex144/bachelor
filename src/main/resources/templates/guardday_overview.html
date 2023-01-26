@@ -11,6 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment-with-locales.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.19/jquery.touchSwipe.min.js" integrity="sha512-YYiD5ZhmJ0GCdJvx6Xe6HzHqHvMpJEPomXwPbsgcpMFPW+mQEeVBU6l9n+2Y+naq+CLbujk91vHyN18q6/RSYw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="../calendar.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/arrobefr-jquery-calendar-bs4@1.0.3/dist/css/jquery-calendar.min.css">
     <style>
 
         h1 {
@@ -50,10 +54,81 @@
     </table>
 </div>
 
-<script>
+<div class="container">
+
+    <h1>Kalender Test</h1>
+
+    <p class="mt-2"></p>
+
+    <div class="container-fluid px-4">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
     function rowClicked(value) {
         location.href = "../guardday_execution/" + value;
     }
+
+    $(document).ready(function(){
+
+        moment.locale('de');
+        var now = moment();
+        moment.locale('de');
+
+        $("#swipe").swipe({
+            swipe:function(event, direction, distance, duration, fingerCount) {
+                $(this).text("You swiped " + direction );
+            }
+        });
+
+        var events = /*[(${events})]*/
+
+        /*
+        var events = [
+            {
+                start: now.startOf('week').add(6, 'h').format('X'),
+                end: now.startOf('week').add(22, 'h').format('X'),
+                title: '1',
+                content: 'Hello World! <br> <button onclick="rowClicked(1)">Foo Bar</button>',
+                category:'Ungebucht'
+            },
+            {
+                start: now.startOf('week').add(6, 'h').format('X'),
+                end: now.startOf('week').add(22, 'h').format('X'),
+                title: '1',
+                content: 'Hello World! <br> <button onclick="rowClicked(1)">Foo Bar</button>',
+                category:'Gebucht',
+                data: "#2E7D32"
+            }
+
+        ];
+
+        */
+
+
+        var eventCategoryColors = [{category:'Gebucht', color: "#2E7D32"}, {category:'Ungebucht', color:"#C62828"}]
+
+        var calendar = $('#calendar').Calendar({
+            locale: 'de',
+            events: events,
+            colors: {
+                random: false,
+                events: ['#2E7D32', '#C62828']
+            }
+        });
+        calendar.setEventCategoriesColors(eventCategoryColors);
+        calendar.init();
+        var result = calendar.getEventCategoriesColors();
+        console.log(result);
+
+    });
+    /*]]>*/
 </script>
 
 </body>

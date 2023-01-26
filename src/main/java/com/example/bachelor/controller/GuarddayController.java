@@ -67,11 +67,48 @@ public class GuarddayController {
 
         List<GuardDayDto> guardDays = guardDayService.readAllGuardDays();
         model.addAttribute("guarddays", guardDays);
+        model.addAttribute("events", getEventsFromGuardDays(guardDays));
 
         return HtmlConstants.GUARDDAY_OVERVIEW;
     }
 
+    private String getEventsFromGuardDays(List<GuardDayDto> guardDays) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (GuardDayDto guardDayDto : guardDays) {
+            sb.append("{ ");
+            sb.append(mapGuardDayToJson(guardDayDto));
+            sb.append("}, ");
+        }
+
+        sb.delete(sb.length() -2, sb.length());
+        sb.append("]");
+        return sb.toString();
+    }
+
+    private String mapGuardDayToJson(GuardDayDto guardDayDto) {
+        StringBuilder sb = new StringBuilder();
+
+        long guardingDate = guardDayDto.getGuardingDate().getTime() / 1000;
+        long guardingStart = guardingDate + (guardDayDto.getStartTime().getTime() / 1000) + 3600;
+        long guardingEnd = guardingDate + (guardDayDto.getEndTime().getTime() / 1000) + 3600;
+
+        sb.append("start: ");
+        sb.append("'" + guardingStart + "', ");
+        sb.append("end: ");
+        sb.append("'" + guardingEnd + "', ");
+        sb.append("title: ");
+        sb.append("'Wachtag-" + guardDayDto.getGuardDayId() + "', ");
+        sb.append("content: ");
+        sb.append("'<button onclick=\"rowClicked(" + guardDayDto.getGuardDayId() + ")\"> Wachtag öffnen </button>',");
+        sb.append("category: ");
+        sb.append(guardDayDto.getUserGuardingRelationsBooked() == null || guardDayDto.getUserGuardingRelationsBooked().isEmpty() ? "'Ungebucht'" : "'Gebucht'");
+        //content: 'Hello World! <br> <button onclick="rowClicked(1)">Foo Bar</button>',
+        return sb.toString();
+    }
+
     @GetMapping("/guardday_execution/{id}")
+
     public String getGuardDayExecution(Model model, @PathVariable Long id) {
 
         //Wachtag anhängen
