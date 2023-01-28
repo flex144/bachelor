@@ -19,8 +19,10 @@ public final class JournalHelper {
                                                      UserDto userBooked) {
         JournalEntryDto journalEntryDto = new JournalEntryDto();
         //TODO: Hier NutzerId als Parameter übergeben, wenn null dann aus Principal
-        UserDetailsPrincipal principal = (UserDetailsPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        journalEntryDto.setUserId(principal.getUserId());
+        if (!EntryType.WEATHER.equals(entryType)) {
+            UserDetailsPrincipal principal = (UserDetailsPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            journalEntryDto.setUserId(principal.getUserId());
+        }
         journalEntryDto.setGuardDayId(guardDayId);
         journalEntryDto.setEntryType(entryType);
         journalEntryDto.setCreation(new Date());

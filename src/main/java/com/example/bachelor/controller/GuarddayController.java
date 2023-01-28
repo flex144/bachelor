@@ -102,9 +102,19 @@ public class GuarddayController {
         sb.append("content: ");
         sb.append("'<button onclick=\"rowClicked(" + guardDayDto.getGuardDayId() + ")\"> Wachtag öffnen </button>',");
         sb.append("category: ");
-        sb.append(guardDayDto.getUserGuardingRelationsBooked() == null || guardDayDto.getUserGuardingRelationsBooked().isEmpty() ? "'Ungebucht'" : "'Gebucht'");
+        sb.append("'" + getGuardDayCategory(guardDayDto) + "'");
         //content: 'Hello World! <br> <button onclick="rowClicked(1)">Foo Bar</button>',
         return sb.toString();
+    }
+
+    private String getGuardDayCategory(GuardDayDto guardDayDto) {
+        if (guardDayDto.getActualEndTime() != null) {
+            return "Geschlossen";
+        } else if (guardDayDto.getUserGuardingRelationsBooked() == null || guardDayDto.getUserGuardingRelationsBooked().isEmpty()) {
+            return "Ungebucht";
+        } else {
+            return "Gebucht";
+        }
     }
 
     @GetMapping("/guardday_execution/{id}")
@@ -200,7 +210,7 @@ public class GuarddayController {
 
     @PostMapping("/guardday_execution/startEndGuardday")
     public String startEndGuardday(Model model,
-                                   @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
+                                   @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) throws InterruptedException {
 
         EntryType entryType;
 
@@ -221,6 +231,10 @@ public class GuarddayController {
         guardDayDto.getJournalEntries().add(journalEntryDto);
         guardDayDto.getJournalEntries().add(journalEntryDtoWeather);
         guardDayService.saveGuardDayDto(guardDayDto);
+
+        if (guardDayDto.getActualEndTime() == null) {
+            guardDayService.writeWeatherAPIResults(guardDayDto.getGuardDayId());
+        }
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
     }

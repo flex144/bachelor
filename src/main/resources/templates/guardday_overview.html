@@ -112,14 +112,14 @@
         */
 
 
-        var eventCategoryColors = [{category:'Gebucht', color: "#2E7D32"}, {category:'Ungebucht', color:"#C62828"}]
+        var eventCategoryColors = [{category:'Gebucht', color: "#2E7D32"}, {category:'Ungebucht', color:"#C62828"}, {category: 'Geschlossen', color:"#898989"}]
 
         var calendar = $('#calendar').Calendar({
             locale: 'de',
             events: events,
             colors: {
                 random: false,
-                events: ['#2E7D32', '#C62828']
+                events: ['#2E7D32', '#C62828', '#898989']
             }
         });
         calendar.setEventCategoriesColors(eventCategoryColors);

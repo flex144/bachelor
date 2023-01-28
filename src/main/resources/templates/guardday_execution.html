@@ -185,9 +185,9 @@
         <tr th:if="${guarddaydto.journalEntries.isEmpty()}">
             <td colspan="3"> Keine Einträge vorhanden </td>
         </tr>
-        <tr th:each="journalEntry : ${guarddaydto.journalEntries}">
+        <tr th:each="journalEntry : ${#lists.sort(guarddaydto.journalEntries)}">
             <td><span th:text="${#dates.format(journalEntry.creation, 'dd.MM.yy HH:mm')}"> </span></td>
-            <td><span th:text="${journalEntry.userDto.firstName} + ' ' + ${journalEntry.userDto.lastName}"> </span></td>
+            <td><span th:text="${journalEntry.userDto ne null ? journalEntry.userDto.firstName + ' ' + journalEntry.userDto.lastName : 'SYSTEM'}"> </span></td>
             <td><span th:text="${journalEntry.description}"> </span></td>
         </tr>
         </tbody>

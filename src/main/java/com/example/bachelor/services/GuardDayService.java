@@ -5,13 +5,18 @@ import com.example.bachelor.data.entities.GuardDayEntity;
 import com.example.bachelor.data.entities.JournalEntryEntity;
 import com.example.bachelor.data.entities.UserEntity;
 import com.example.bachelor.data.entities.UserGuardingRelationEntity;
+import com.example.bachelor.data.enums.EntryType;
 import com.example.bachelor.repositories.GuardDayRepository;
 import com.example.bachelor.repositories.UserGuardingRelationRepository;
+import com.example.bachelor.utility.helper.JournalHelper;
 import com.example.bachelor.utility.mapper.GuardDayMapper;
+import com.example.bachelor.utility.weatherapi.WeatherAPI;
+import com.example.bachelor.utility.weatherapi.WeatherApiResult;
 import org.apache.el.lang.ELArithmetic;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -19,6 +24,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -41,6 +47,9 @@ public class GuardDayService {
 
     @Autowired
     private UserGuardingRelationRepository userGuardingRelationRepository;
+
+    @Autowired
+    private WeatherAPI weatherApi;
 
     public GuardDayDto readGuardDayById(Long guardDayId) {
         GuardDayEntity guardDayEntity = guardDayRepository.findById(guardDayId).orElse(null);
@@ -208,5 +217,30 @@ public class GuardDayService {
         return dateToConvert.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
+    }
+
+    @Async
+    public void writeWeatherAPIResults(long guardDayId) throws InterruptedException {
+
+        /*
+        wait 1h
+        read guard day
+        while (guardDay is not closed)
+            readWeatherApi
+            writeWeatherApiResult
+            wait 1h
+            read guardday;
+         */
+        Thread.sleep(10000);
+        GuardDayDto guardDayDto = readGuardDayById(guardDayId);
+
+        while (guardDayDto.getActualEndTime() == null) {
+            WeatherApiResult weatherApiResult = weatherApi.getCurrentWeatherData();
+            JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null);
+            guardDayDto.getJournalEntries().add(journalEntryDtoWeather);
+            saveGuardDayDto(guardDayDto);
+            Thread.sleep(10000);
+            guardDayDto = readGuardDayById(guardDayId);
+        }
     }
 }

@@ -6,7 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.util.Date;
 
-public class JournalEntryDto {
+public class JournalEntryDto implements Comparable<JournalEntryDto> {
 
     private Long guardDayId;
     private Long journalEntryId;
@@ -73,5 +73,10 @@ public class JournalEntryDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public int compareTo(JournalEntryDto toCompare) {
+        return this.journalEntryId < toCompare.getJournalEntryId() ? 1 : -1;
     }
 }
