@@ -2,18 +2,24 @@ package com.example.bachelor.controller;
 
 import com.example.bachelor.data.dto.*;
 import com.example.bachelor.data.enums.EntryType;
+import com.example.bachelor.services.GuardDayPDFExportService;
 import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
 import com.example.bachelor.utility.constants.HtmlConstants;
 import com.example.bachelor.utility.helper.JournalHelper;
 import com.example.bachelor.utility.weatherapi.WeatherAPI;
 import com.example.bachelor.utility.weatherapi.WeatherApiResult;
+import com.lowagie.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +37,9 @@ public class GuarddayController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    GuardDayPDFExportService guardDayPDFExportService;
 
     @GetMapping("/guardday_creation")
     public String getGuardDayCreation(Model model) {
@@ -331,6 +340,20 @@ public class GuarddayController {
         guardDayService.saveGuardDayDto(guardDayDto);
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
+
+    @GetMapping("/exportToPdf")
+    public void exportGuardDayToPdf(HttpServletResponse response,
+                                    @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) throws IOException {
+        response.setContentType("application/pdf");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Wachtag-" + currentDateTime + ".pdf";
+        response.setHeader(headerKey, headerValue);
+
+        guardDayPDFExportService.export(response, guardDayDto);
+
     }
 
 }

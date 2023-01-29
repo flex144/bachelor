@@ -122,7 +122,7 @@ public class GuardDayService {
         return result;
     }
 
-    private List<UserGuardingRelationDto> readUserGuardingRelations(Long guardDayId) {
+    public List<UserGuardingRelationDto> readUserGuardingRelations(Long guardDayId) {
         List<UserGuardingRelationDto> result = new ArrayList<>();
         readUserGuardingRelationEntities(guardDayId).forEach(n -> result.add(guardDayMapper.mapUserGuardingRelationEntityToDto(n)));
 
@@ -231,7 +231,7 @@ public class GuardDayService {
             wait 1h
             read guardday;
          */
-        Thread.sleep(10000);
+        Thread.sleep(120000);
         GuardDayDto guardDayDto = readGuardDayById(guardDayId);
 
         while (guardDayDto.getActualEndTime() == null) {
