@@ -1,11 +1,15 @@
 package com.example.bachelor.services;
 
+import com.example.bachelor.data.dto.ConfirmationTokenDto;
 import com.example.bachelor.data.dto.UserDto;
 import com.example.bachelor.data.dto.UserGuardingRelationDto;
 import com.example.bachelor.data.dto.UserStatisticsDto;
+import com.example.bachelor.data.entities.ConfirmationTokenEntity;
 import com.example.bachelor.data.entities.UserEntity;
 import com.example.bachelor.data.enums.UserRoles;
+import com.example.bachelor.repositories.ConfirmationTokenRepository;
 import com.example.bachelor.repositories.UserRepository;
+import com.example.bachelor.utility.exceptions.UserAlreadyExistsException;
 import com.example.bachelor.utility.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,9 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +32,9 @@ public class UserService{
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
 
     public UserEntity readUserById(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -63,10 +68,10 @@ public class UserService{
         saveUser(userMapper.mapUserDtoToEntity(userDto));
     }
 
-    public UserEntity createUser(UserDto userDto) throws IllegalStateException{
+    public UserEntity createUser(UserDto userDto) throws UserAlreadyExistsException{
         UserEntity user = findUserByEmail(userDto.getEmail());
         if (user != null) {
-            throw new IllegalStateException("Nutzer mit Email '" + user.getEmail() + "' existiert bereits!");
+            throw new UserAlreadyExistsException("Nutzer mit Email '" + user.getEmail() + "' existiert bereits!");
         }
 
         UserEntity newUserEntity = new UserEntity();
@@ -92,7 +97,42 @@ public class UserService{
         return userMapper.mapUserEntityToDto(userEntity);
     }
 
+    public void confirmUser(String email) {
+        UserDto userToConfirm = findUserDtoByEmail(email);
+        userToConfirm.setConfirmed(true);
+        saveUserDto(userToConfirm);
+    }
+
     public String encode(String pw) {
         return passwordEncoder.encode(pw);
+    }
+
+    public ConfirmationTokenEntity createNewConfirmationToken(String userEmail) {
+        ConfirmationTokenEntity confirmationToken = new ConfirmationTokenEntity();
+
+        confirmationToken.setCreatedDate(new Date());
+        confirmationToken.setEmailUser(userEmail);
+        confirmationToken.setConfirmationToken(UUID.randomUUID().toString());
+
+        confirmationToken = confirmationTokenRepository.save(confirmationToken);
+
+        return confirmationToken;
+    }
+
+    public ConfirmationTokenEntity findConfirmationToken(String token) {
+        Iterable<ConfirmationTokenEntity> tokens = confirmationTokenRepository.findUserByConfirmationToken(token);
+
+        List<ConfirmationTokenEntity> result = new ArrayList<>();
+        tokens.forEach(result::add);
+
+        if (result.size() != 1) {
+            throw new IllegalStateException("More or less than one confirmation token found!");
+        }
+
+        return result.get(0);
+    }
+
+    public void deleteConfirmationTokenById(Long tokenId) {
+        confirmationTokenRepository.deleteById(tokenId);
     }
 }

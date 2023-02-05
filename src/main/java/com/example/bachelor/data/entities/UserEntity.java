@@ -21,6 +21,8 @@ public class UserEntity {
     private String password;
     @Column(nullable=false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean active;
+    @Column(nullable=false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean confirmed;
     private String localBranch;
 
     public UserEntity() {
@@ -75,11 +77,19 @@ public class UserEntity {
     }
 
     public boolean isActive() {
-        return active;
+        return active && confirmed;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
     public String getLocalBranch() {

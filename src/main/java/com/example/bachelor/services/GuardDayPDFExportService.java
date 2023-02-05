@@ -162,8 +162,10 @@ public class GuardDayPDFExportService {
 
         List<JournalEntryDto> entries = guardDayDto.getJournalEntries().stream().filter(n -> !Arrays.asList(EntryType.WEATHER, EntryType.WATER_TEMP, EntryType.USER_GUARD_BEGIN, EntryType.USER_GUARD_END).contains(n.getEntryType())).collect(Collectors.toList());
 
+        Collections.reverse(entries);
+
         for (JournalEntryDto entry : entries) {
-            table.addCell(String.valueOf(entry.getEntryType()));
+            table.addCell(String.valueOf(entry.getEntryType().getDescription()));
             table.addCell(dateFormatter.format(entry.getCreation()));
             table.addCell(entry.getUserDto().getFirstName() + " " + entry.getUserDto().getLastName());
             table.addCell(entry.getDescription());

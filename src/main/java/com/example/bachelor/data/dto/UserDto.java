@@ -16,6 +16,7 @@ public class UserDto {
     private String password;
     private String confirmationPassword;
     private boolean active;
+    private boolean confirmed;
     private String localbranch;
 
     public UserDto() {
@@ -83,6 +84,14 @@ public class UserDto {
 
     public void setConfirmationPassword(String confirmationPassword) {
         this.confirmationPassword = confirmationPassword;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
     public String getLocalbranch() {
