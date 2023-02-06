@@ -193,7 +193,7 @@ public class GuarddayController {
 
         if (guardDayDto.getActualStartTime() != null) {
             userGuardingRelationDto.setGuardingStart(new Date());
-            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_BEGIN, null, null, userToSave);
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_BEGIN, null, null, userToSave, null);
 
             guardDayDto.getJournalEntries().add(journalEntryDto);
         } else {
@@ -214,7 +214,7 @@ public class GuarddayController {
 
         if (guardDayDto.getActualStartTime() != null) {
             userGuardingRelationDto.setGuardingStart(new Date());
-            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_BEGIN, guardDayDto.getFreetextUser(), null, null);
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_BEGIN, guardDayDto.getFreetextUser(), null, null, null);
 
             guardDayDto.getJournalEntries().add(journalEntryDto);
         } else {
@@ -243,9 +243,9 @@ public class GuarddayController {
             endUserRelations(guardDayDto);
         }
         WeatherApiResult weatherApiResult = weatherApi.getCurrentWeatherData();
-        JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null);
+        JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null, null);
 
-        JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), entryType, null, null, null);
+        JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), entryType, null, null, null, null);
         guardDayDto.getJournalEntries().add(journalEntryDto);
         guardDayDto.getJournalEntries().add(journalEntryDtoWeather);
         guardDayService.saveGuardDayDto(guardDayDto);
@@ -263,7 +263,7 @@ public class GuarddayController {
             if (relation.getGuardingEnd() == null) {
                 relation.setGuardingEnd(guardDayDto.getActualEndTime());
                 guardDayService.saveUserGuardingRelationDto(relation);
-                JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, relation.getUserDto());
+                JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, relation.getUserDto(), null);
                 guardDayDto.getJournalEntries().add(journalEntryDto);
             }
         }
@@ -278,7 +278,7 @@ public class GuarddayController {
         if (guardDayDto.getWaterTemp() == null || guardDayDto.getWaterTemp().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Es muss eine Wassertemperatur eingegeben werden!");
         } else {
-            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WATER_TEMP, guardDayDto.getWaterTemp(), null, null);
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WATER_TEMP, guardDayDto.getWaterTemp(), null, null, null);
             guardDayDto.getJournalEntries().add(journalEntryDto);
             guardDayService.saveGuardDayDto(guardDayDto);
         }
@@ -293,7 +293,7 @@ public class GuarddayController {
         if (guardDayDto.getJournalDescription() == null || guardDayDto.getJournalDescription().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Es muss eine Beschreibung eingegeben werden!");
         } else {
-            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.DEFAULT, guardDayDto.getJournalDescription(), null, null);
+            JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.DEFAULT, guardDayDto.getJournalDescription(), null, null, guardDayDto.getUserToSave());
             guardDayDto.getJournalEntries().add(journalEntryDto);
             guardDayService.saveGuardDayDto(guardDayDto);
         }
@@ -325,9 +325,9 @@ public class GuarddayController {
             //Wachbucheintrag schreiben und speichern
             JournalEntryDto journalEntryDto;
             if (guardingRelationDto.getUserId() != null) {
-                journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, guardingRelationDto.getUserDto());
+                journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, guardingRelationDto.getUserDto(), null);
             } else {
-                journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, guardingRelationDto.getUserFreetext(), null, null);
+                journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, guardingRelationDto.getUserFreetext(), null, null, null);
             }
             guardDayDto.getJournalEntries().add(journalEntryDto);
             guardDayService.saveGuardDayDto(guardDayDto);
@@ -343,7 +343,7 @@ public class GuarddayController {
         //Wenn ILS aktiv ist, setzen wir es auf inaktiv
         EntryType entryType = guardDayDto.isIlsActive() ? EntryType.ILS_INACTIVE : EntryType.ILS_ACTIVE;
 
-        JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), entryType, null, null, null);
+        JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), entryType, null, null, null, null);
         guardDayDto.getJournalEntries().add(journalEntryDto);
         guardDayDto.setIlsActive(!guardDayDto.isIlsActive());
         guardDayService.saveGuardDayDto(guardDayDto);

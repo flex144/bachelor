@@ -63,7 +63,7 @@
             <div class="row">
                 <div class="col">
                     <h4 th:text="${#dates.format(guarddaydto.guardingDate, 'dd.MM.yy')}"></h4>
-                    <h4 th:text="${#dates.format(currentTime, 'HH:mm')}"></h4>
+                    <h4 th:text="${#dates.format(guarddaydto.startTime, 'HH:mm')} + ' - ' + ${#dates.format(guarddaydto.endTime, 'HH:mm')}"></h4>
                 </div>
                 <div class="col">
 
@@ -183,11 +183,25 @@
 
 
     <p class="mt-2"></p>
+    <hr/>
+    <p class="mt-2"></p>
 
     <form th:action="@{/guardday_execution/saveJournalEntry}" th:object="${guarddaydto}" method="post">
 
-        <label for="textArea">Wachbuch Eintrag</label>
+
+
+        <label style="font-weight: bold" for="textArea">Wachbuch Eintrag</label>
         <textarea class="form-control" id="textArea" rows="3" th:field="*{journalDescription}"></textarea>
+        <p class="mt-2"></p>
+        <div class="row">
+            <div class="col-3">
+                <select th:field="*{userToSave}" class="selectpicker" data-live-search="true">
+                    <option value="">Nutzer wählen</option>
+                    <option th:each="user : ${guarddaydto.allUsers}" th:value="${user.userId}"
+                            th:text="${user.firstName + ' ' + user.lastName}"></option>
+                </select>
+            </div>
+        </div>
         <p class="mt-2"></p>
         <button class="btn btn-primary" type="submit">Eintrag speichern</button>
 

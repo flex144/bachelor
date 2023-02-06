@@ -236,7 +236,7 @@ public class GuardDayService {
 
         while (guardDayDto.getActualEndTime() == null) {
             WeatherApiResult weatherApiResult = weatherApi.getCurrentWeatherData();
-            JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null);
+            JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null, null);
             guardDayDto.getJournalEntries().add(journalEntryDtoWeather);
             saveGuardDayDto(guardDayDto);
             Thread.sleep(10000);
