@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -112,7 +113,6 @@ public class GuarddayController {
         sb.append("'<button onclick=\"rowClicked(" + guardDayDto.getGuardDayId() + ")\"> Wachtag öffnen </button>',");
         sb.append("category: ");
         sb.append("'" + getGuardDayCategory(guardDayDto) + "'");
-        //content: 'Hello World! <br> <button onclick="rowClicked(1)">Foo Bar</button>',
         return sb.toString();
     }
 
@@ -147,20 +147,29 @@ public class GuarddayController {
 
     @PostMapping("/guardday_execution/saveUser")
     public String saveUser(Model model,
+                           RedirectAttributes redirectAttributes,
                            @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
+        final String redirectAdress = HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
 
         model.addAttribute("guarddaydto", guardDayDto);
         if (guardDayDto.getUserToSave() == null && (guardDayDto.getFreetextUser() == null || guardDayDto.getFreetextUser().isEmpty())) {
-            //TODO: throw error
+            redirectAttributes.addFlashAttribute("errorMessage", "Ein Nutzer muss ausgewählt oder eingegeben werden!");
         } else if (guardDayDto.getUserToSave() != null && guardDayDto.getFreetextUser() != null && !guardDayDto.getFreetextUser().isEmpty()) {
-            //TODO: throw error
+            redirectAttributes.addFlashAttribute("errorMessage", "Es darf nicht ein Nutzer aus der Liste gewählt und gleichzeitig eingegeben werden!");
+        }
+        if (redirectAttributes.getFlashAttributes().containsKey("errorMessage")) {
+            return redirectAdress;
         }
 
         UserGuardingRelationDto relationDto = null;
 
         if (guardDayDto.getUserToSave() != null) {
             relationDto = createRegisteredUserRelation(guardDayDto);
+            if (relationDto == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Nutzer konnte nicht gespeichert werden!");
+                return redirectAdress;
+            }
         }
 
         if (guardDayDto.getFreetextUser() != null && !guardDayDto.getFreetextUser().isEmpty()) {
@@ -170,7 +179,7 @@ public class GuarddayController {
         guardDayService.saveUserGuardingRelationDto(relationDto);
         guardDayService.saveGuardDayDto(guardDayDto);
 
-        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+        return redirectAdress;
     }
 
     private UserGuardingRelationDto createRegisteredUserRelation(GuardDayDto guardDayDto) {
@@ -179,7 +188,7 @@ public class GuarddayController {
         Long userIdToSave = guardDayDto.getUserToSave();
         UserDto userToSave = guardDayDto.getAllUsers().stream().filter(n -> n.getUserId().equals(userIdToSave)).findFirst().orElse(null);
         if (userToSave == null) {
-            //TODO: throw error
+            return null;
         }
 
         if (guardDayDto.getActualStartTime() != null) {
@@ -262,12 +271,12 @@ public class GuarddayController {
     }
 
     @PostMapping("/guardday_execution/saveWatertemp")
-    public String saveWatertemp(Model model,
+    public String saveWatertemp(RedirectAttributes redirectAttributes,
                                 @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
                                 Authentication authentication) {
 
         if (guardDayDto.getWaterTemp() == null || guardDayDto.getWaterTemp().isEmpty()) {
-            //TODO: ERROR
+            redirectAttributes.addFlashAttribute("errorMessage", "Es muss eine Wassertemperatur eingegeben werden!");
         } else {
             JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WATER_TEMP, guardDayDto.getWaterTemp(), null, null);
             guardDayDto.getJournalEntries().add(journalEntryDto);
@@ -279,10 +288,10 @@ public class GuarddayController {
 
     @PostMapping("/guardday_execution/saveJournalEntry")
     public String saveJournalEntry(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
-                                   Authentication authentication) {
+                                   RedirectAttributes redirectAttributes) {
 
         if (guardDayDto.getJournalDescription() == null || guardDayDto.getJournalDescription().isEmpty()) {
-            //TODO: ERROR
+            redirectAttributes.addFlashAttribute("errorMessage", "Es muss eine Beschreibung eingegeben werden!");
         } else {
             JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.DEFAULT, guardDayDto.getJournalDescription(), null, null);
             guardDayDto.getJournalEntries().add(journalEntryDto);
@@ -342,8 +351,10 @@ public class GuarddayController {
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
     }
 
-    @GetMapping("/exportToPdf")
-    public void exportGuardDayToPdf(HttpServletResponse response,
+    @RequestMapping("/exportToPdf")
+    public String exportGuardDayToPdf(HttpServletResponse response,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model,
                                     @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) throws IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
@@ -352,7 +363,13 @@ public class GuarddayController {
         String headerValue = "attachment; filename=Wachtag-" + currentDateTime + ".pdf";
         response.setHeader(headerKey, headerValue);
 
-        guardDayPDFExportService.export(response, guardDayDto);
+        try {
+            guardDayPDFExportService.export(response, guardDayDto);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
+
+        }
+        return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
 
     }
 

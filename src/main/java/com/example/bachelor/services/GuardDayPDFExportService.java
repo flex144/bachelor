@@ -36,6 +36,9 @@ public class GuardDayPDFExportService {
     private static DateFormat dateFormatter = new SimpleDateFormat("HH:mm");
 
     public void export(HttpServletResponse response, GuardDayDto guardDayDto) throws DocumentException, IOException {
+        if (guardDayDto.getActualEndTime() == null) {
+            throw new IllegalStateException("Wachtag kann nicht gedruckt werden, da er noch nicht beendet wurde.");
+        }
         Document document = new Document(PageSize.A4);
         PdfWriter.getInstance(document, response.getOutputStream());
 
