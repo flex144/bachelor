@@ -42,11 +42,11 @@
                     <th>Nachname</th>
                     <td><p th:text="${user.lastName}" style="font-size: 14px" /></td>
                 </tr>
-                <tr>
+                <tr sec:authorize="hasRole('ADMIN')">
                     <th>Rolle</th>
                     <td> <p th:text="${user.getUserRoleString()}" style="font-size: 14px"/></td>
                 </tr>
-                <tr>
+                <tr sec:authorize="hasRole('ADMIN')">
                     <th>Freigeschaltet</th>
                     <td th:if="${user.active}" style="font-size: 14px">Ja</td>
                     <td th:unless="${user.isActive()}" style="font-size: 14px">Nein</td>
