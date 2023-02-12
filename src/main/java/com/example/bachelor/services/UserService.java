@@ -135,4 +135,15 @@ public class UserService{
     public void deleteConfirmationTokenById(Long tokenId) {
         confirmationTokenRepository.deleteById(tokenId);
     }
+
+    public String setRandomUserPassword(String email) {
+        String newPassword = "";
+        UserDto toChange = findUserDtoByEmail(email);
+        if (toChange != null) {
+            newPassword = UUID.randomUUID().toString().substring(1,12);
+            toChange.setPassword(encode(newPassword));
+            saveUserDto(toChange);
+        }
+        return newPassword;
+    }
 }

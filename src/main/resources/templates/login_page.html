@@ -115,6 +115,12 @@
                             freigeschaltet wurden!
                         </div>
                     </div>
+                    <!--/*@thymesVar id="verified" type="java.lang.String"*/-->
+                    <div th:if="${verified}">
+                        <br>
+                        <div class="alert alert-info" th:text="${verified}">
+                        </div>
+                    </div>
 
                     <br>
                     <form th:action="@{/login}" method="post">
@@ -130,15 +136,6 @@
                             <input id="password" type="password" class="form-control" name="password"
                                    placeholder="Passwort eingeben">
                         </div>
-                        <!-- Checkbox for possible later use
-                        <div  class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    <input  type="checkbox">  Angemeldet bleiben
-                                </label>
-                            </div>
-                        </div>
-                        -->
                         <br>
                         <div>
                             <input class="button btn btn-block" type="submit" value="Anmelden"/>

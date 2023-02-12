@@ -11,5 +11,6 @@ public interface HtmlConstants {
     String GUARDDAY_CREATION = "guardday_creation";
     String GUARDDAY_OVERVIEW = "guardday_overview";
     String GUARDDAY_EXECUTION = "guardday_execution";
+    String FORGOT_PASSWORD = "forgot_password";
 
 }

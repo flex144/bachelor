@@ -2,6 +2,8 @@ package com.example.bachelor.services;
 
 import com.example.bachelor.data.dto.UserDetailsPrincipal;
 import com.example.bachelor.data.entities.UserEntity;
+import com.example.bachelor.utility.exceptions.UserNotActiveException;
+import com.example.bachelor.utility.exceptions.UserNotConfirmedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
