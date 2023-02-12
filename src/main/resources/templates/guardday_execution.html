@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,7 +48,7 @@
     <div class="row">
         <div class="col-10">
         </div>
-        <div class="col-2">
+        <div class="col-2" th:if="${guarddaydto.actualEndTime ne null}">
             <a type="button" class="btn btn-primary" th:href="@{/exportToPdf}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
                     <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"></path>
@@ -83,9 +84,9 @@
             </div>
             <form th:action="@{/guardday_execution/saveWatertemp}" th:object="${guarddaydto}" method="post">
                 <label>Wassertemp</label>
-                <input th:field="*{waterTemp}">
+                <input th:field="*{waterTemp}" th:disabled="${(guarddaydto.actualStartTime eq null) or (guarddaydto.actualEndTime ne null)}">
 
-                <button class="btn btn-primary" type="submit">Wasser speichern</button>
+                <button class="btn btn-primary" type="submit" th:disabled="${(guarddaydto.actualStartTime eq null) or (guarddaydto.actualEndTime ne null)}">Wasser speichern</button>
             </form>
         </div>
     </div>
@@ -112,9 +113,14 @@
                         <td th:if="${userBooked.userDto ne null}"><span th:text="${userBooked.userDto.firstName + ' ' + userBooked.userDto.lastName}"> Name </span></td>
                         <td th:if="${!#strings.isEmpty(userBooked.userFreetext)}"><span th:text="${userBooked.userFreetext}"> Name </span></td>
                         <td >
-                            <a th:href="@{/guardday_execution/deleteUser/__${userBooked.relationId}__}">
+                            <a th:href="@{/guardday_execution/deleteUser/__${userBooked.relationId}__}" th:if="${guarddaydto.actualStartTime eq null}">
 
                                 <span class="fa fa-trash"></span>
+
+                            </a>
+                            <a th:href="@{/guardday_execution/transferUser/__${userBooked.relationId}__}" th:if="${(guarddaydto.actualStartTime ne null) and (guarddaydto.actualEndTime eq null)}">
+
+                                <span class="fa fa-exchange"></span>
 
                             </a>
                         </td>
@@ -150,17 +156,17 @@
 
         <div class="row">
             <div class="col-3">
-                <select th:field="*{userToSave}" class="selectpicker" data-live-search="true">
+                <select th:field="*{userToSave}" class="selectpicker" data-live-search="true" th:disabled="${(guarddaydto.actualEndTime ne null)}">
                     <option value="">Nutzer wählen</option>
                     <option th:each="user : ${guarddaydto.allUsers}" th:value="${user.userId}"
-                            th:text="${user.firstName + ' ' + user.lastName}"></option>
+                            th:text="${user.userId + ' - ' + user.firstName + ' ' + user.lastName}"></option>
                 </select>
             </div>
             <div class="col-2">
-                <input th:field="*{freetextUser}" class="form-control" id="userText" placeholder="Nutzer Eingabe">
+                <input th:field="*{freetextUser}" class="form-control" id="userText" placeholder="Nutzer Eingabe" th:disabled="${(guarddaydto.actualEndTime ne null)}">
             </div>
             <div class="col-2">
-                <button class="btn btn-primary" type="submit">Helfer speichern</button>
+                <button class="btn btn-primary" type="submit" th:disabled="${(guarddaydto.actualEndTime ne null)}">Helfer speichern</button>
             </div>
         </div>
     </form>
@@ -171,12 +177,12 @@
     <div class="row">
         <div class="col-2">
             <form th:action="@{/guardday_execution/startEndGuardday}" th:object="${guarddaydto}" method="post">
-                <button class="btn btn-primary" type="submit" th:text="${guarddaydto.actualStartTime == null} ? 'Wachbeginn' : 'Wachende'"></button>
+                <button class="btn btn-primary" type="submit" th:text="${guarddaydto.actualStartTime == null} ? 'Wachbeginn' : 'Wachende'" th:disabled="${(guarddaydto.actualEndTime ne null)}"></button>
             </form>
         </div>
         <div class="col-2">
             <form th:action="@{/guardday_execution/changeIlsActivity}" th:object="${guarddaydto}" method="post">
-                <button class="btn btn-primary" type="submit" th:text="${guarddaydto.ilsActive} ? 'Abmeldung ILS' : 'Anmeldung ILS'"></button>
+                <button class="btn btn-primary" type="submit" th:text="${guarddaydto.ilsActive} ? 'Abmeldung ILS' : 'Anmeldung ILS'" th:disabled="${(guarddaydto.actualStartTime eq null) or (guarddaydto.actualEndTime ne null)}"></button>
             </form>
         </div>
     </div>
@@ -198,7 +204,7 @@
                 <select th:field="*{userToSave}" class="selectpicker" data-live-search="true">
                     <option value="">Nutzer wählen</option>
                     <option th:each="user : ${guarddaydto.allUsers}" th:value="${user.userId}"
-                            th:text="${user.firstName + ' ' + user.lastName}"></option>
+                            th:text="${user.userId + ' - ' + user.firstName + ' ' + user.lastName}"></option>
                 </select>
             </div>
         </div>

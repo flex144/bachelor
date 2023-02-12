@@ -6,10 +6,12 @@ import com.example.bachelor.services.GuardDayPDFExportService;
 import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
 import com.example.bachelor.utility.constants.HtmlConstants;
+import com.example.bachelor.utility.exceptions.UserAlreadyExistsException;
 import com.example.bachelor.utility.helper.JournalHelper;
 import com.example.bachelor.utility.weatherapi.WeatherAPI;
 import com.example.bachelor.utility.weatherapi.WeatherApiResult;
 import com.lowagie.text.DocumentException;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -165,7 +167,13 @@ public class GuarddayController {
         UserGuardingRelationDto relationDto = null;
 
         if (guardDayDto.getUserToSave() != null) {
-            relationDto = createRegisteredUserRelation(guardDayDto);
+            try {
+                relationDto = createRegisteredUserRelation(guardDayDto);
+            } catch (UserAlreadyExistsException e) {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
+                return redirectAdress;
+            }
+
             if (relationDto == null) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Nutzer konnte nicht gespeichert werden!");
                 return redirectAdress;
@@ -182,7 +190,7 @@ public class GuarddayController {
         return redirectAdress;
     }
 
-    private UserGuardingRelationDto createRegisteredUserRelation(GuardDayDto guardDayDto) {
+    private UserGuardingRelationDto createRegisteredUserRelation(GuardDayDto guardDayDto) throws UserAlreadyExistsException {
         UserGuardingRelationDto userGuardingRelationDto = new UserGuardingRelationDto();
 
         Long userIdToSave = guardDayDto.getUserToSave();
@@ -192,11 +200,25 @@ public class GuarddayController {
         }
 
         if (guardDayDto.getActualStartTime() != null) {
+            //Prüfen ob Nutzer bereits vorhanden
+            UserGuardingRelationDto existingRelation = guardDayDto.getUserGuardingRelations().stream().filter(n -> guardDayDto.getUserToSave().equals(n.getUserId()) && n.getGuardingEnd() == null).findFirst().orElse(null);
+
+            if (existingRelation != null) {
+                throw new UserAlreadyExistsException("Nutzer wurde bereits gespeichert!");
+            }
+
             userGuardingRelationDto.setGuardingStart(new Date());
             JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_BEGIN, null, null, userToSave, null);
 
             guardDayDto.getJournalEntries().add(journalEntryDto);
         } else {
+            //Prüfen ob Nutzer bereits vorhanden
+            UserGuardingRelationDto existingRelation = guardDayDto.getUserGuardingRelationsBooked().stream().filter(n -> guardDayDto.getUserToSave().equals(n.getUserId())).findFirst().orElse(null);
+
+            if (existingRelation != null) {
+                throw new UserAlreadyExistsException("Nutzer wurde bereits gespeichert!");
+            }
+
             userGuardingRelationDto.setBooked(true);
         }
 
@@ -263,7 +285,7 @@ public class GuarddayController {
             if (relation.getGuardingEnd() == null) {
                 relation.setGuardingEnd(guardDayDto.getActualEndTime());
                 guardDayService.saveUserGuardingRelationDto(relation);
-                JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, null, null, relation.getUserDto(), null);
+                JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.USER_GUARD_END, relation.getUserFreetext(), null, relation.getUserDto(), null);
                 guardDayDto.getJournalEntries().add(journalEntryDto);
             }
         }
@@ -334,6 +356,46 @@ public class GuarddayController {
         }
 
         return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+    }
+
+    @RequestMapping(value = "/guardday_execution/transferUser/{id}")
+    public String transferUser(RedirectAttributes redirectAttributes,
+                               @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
+                               @PathVariable(name = "id") Long relationId) {
+
+        final String redirectAdress = HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_EXECUTION + "/" + guardDayDto.getGuardDayId();
+
+        UserGuardingRelationDto guardingRelationDto = guardDayDto.getUserGuardingRelationsBooked().stream().filter(n -> relationId.equals(n.getRelationId())).findFirst().orElse(null);
+
+        if (guardingRelationDto == null) {
+            throw new IllegalStateException("Zu übertragende Relation existiert nicht");
+        } else if (guardingRelationDto.getUserId() != null) {
+            UserGuardingRelationDto guardingRelationDtoPresent = guardDayDto.getUserGuardingRelations().stream().filter(n -> guardingRelationDto.getUserId().equals(n.getUserId())).findFirst().orElse(null);
+            if (guardingRelationDtoPresent != null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Nutzer bereits gespeichert!");
+                return redirectAdress;
+            }
+        }
+
+        UserGuardingRelationDto relationDto = null;
+        if (guardingRelationDto.getUserId() != null) {
+            guardDayDto.setUserToSave(guardingRelationDto.getUserId());
+            relationDto = createRegisteredUserRelation(guardDayDto);
+            if (relationDto == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Nutzer konnte nicht gespeichert werden!");
+                return redirectAdress;
+            }
+        }
+
+        if (guardingRelationDto.getUserFreetext() != null && !guardingRelationDto.getUserFreetext().isEmpty()) {
+            guardDayDto.setFreetextUser(guardingRelationDto.getUserFreetext());
+            relationDto = createFreetextUserRelation(guardDayDto);
+        }
+
+        guardDayService.saveUserGuardingRelationDto(relationDto);
+        guardDayService.saveGuardDayDto(guardDayDto);
+
+        return redirectAdress;
     }
 
     @PostMapping("/guardday_execution/changeIlsActivity")
