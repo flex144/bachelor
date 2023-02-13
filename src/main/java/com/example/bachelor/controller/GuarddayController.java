@@ -10,10 +10,7 @@ import com.example.bachelor.utility.exceptions.UserAlreadyExistsException;
 import com.example.bachelor.utility.helper.JournalHelper;
 import com.example.bachelor.utility.weatherapi.WeatherAPI;
 import com.example.bachelor.utility.weatherapi.WeatherApiResult;
-import com.lowagie.text.DocumentException;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @SessionAttributes({"guarddaydto", "guarddayseries"})
@@ -57,8 +53,7 @@ public class GuarddayController {
     }
 
     @PostMapping("/guardday_creation_single")
-    public String saveGuardDayCreation(Model model,
-                                       @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
+    public String saveGuardDayCreation(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
         guardDayService.saveGuardDayDto(guardDayDto);
 
@@ -66,8 +61,7 @@ public class GuarddayController {
     }
 
     @PostMapping("/guardday_creation_series")
-    public String saveGuardDayCreationSeries(Model model,
-                                             @ModelAttribute(name = "guarddayseries") GuardDaySeriesDto guardDaySeries) {
+    public String saveGuardDayCreationSeries(@ModelAttribute(name = "guarddayseries") GuardDaySeriesDto guardDaySeries) {
 
         guardDayService.saveGuardDaySeries(guardDaySeries);
 
@@ -106,15 +100,15 @@ public class GuarddayController {
         long guardingEnd = guardingDate + (guardDayDto.getEndTime().getTime() / 1000) + 3600;
 
         sb.append("start: ");
-        sb.append("'" + guardingStart + "', ");
+        sb.append("'").append(guardingStart).append("', ");
         sb.append("end: ");
-        sb.append("'" + guardingEnd + "', ");
+        sb.append("'").append(guardingEnd).append("', ");
         sb.append("title: ");
-        sb.append("'Wachtag-" + guardDayDto.getGuardDayId() + "', ");
+        sb.append("'Wachtag-").append(guardDayDto.getGuardDayId()).append("', ");
         sb.append("content: ");
-        sb.append("'<button onclick=\"rowClicked(" + guardDayDto.getGuardDayId() + ")\"> Wachtag öffnen </button>',");
+        sb.append("'<button onclick=\"rowClicked(").append(guardDayDto.getGuardDayId()).append(")\"> Wachtag öffnen </button>',");
         sb.append("category: ");
-        sb.append("'" + getGuardDayCategory(guardDayDto) + "'");
+        sb.append("'").append(getGuardDayCategory(guardDayDto)).append("'");
         return sb.toString();
     }
 
@@ -129,12 +123,15 @@ public class GuarddayController {
     }
 
     @GetMapping("/guardday_execution/{id}")
-
-    public String getGuardDayExecution(Model model, @PathVariable Long id) {
+    public String getGuardDayExecution(Model model, @PathVariable Long id,
+                                       RedirectAttributes redirectAttributes) {
 
         //Wachtag anhängen
         GuardDayDto guardDay = guardDayService.readGuardDayByIdWithUsers(id);
-        //TODO: Fehlerbehandlung wenn keiner gefunden wird
+        if (guardDay == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Wachtag existiert nicht!");
+            return HtmlConstants.REDIRECT + HtmlConstants.GUARDDAY_OVERVIEW;
+        }
         model.addAttribute("guarddaydto", guardDay);
 
         WeatherApiResult currentWeatherData = weatherApi.getCurrentWeatherData();
@@ -249,8 +246,7 @@ public class GuarddayController {
     }
 
     @PostMapping("/guardday_execution/startEndGuardday")
-    public String startEndGuardday(Model model,
-                                   @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) throws InterruptedException {
+    public String startEndGuardday(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) throws InterruptedException {
 
         EntryType entryType;
 
@@ -294,8 +290,7 @@ public class GuarddayController {
 
     @PostMapping("/guardday_execution/saveWatertemp")
     public String saveWatertemp(RedirectAttributes redirectAttributes,
-                                @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto,
-                                Authentication authentication) {
+                                @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
         if (guardDayDto.getWaterTemp() == null || guardDayDto.getWaterTemp().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Es muss eine Wassertemperatur eingegeben werden!");
@@ -399,8 +394,7 @@ public class GuarddayController {
     }
 
     @PostMapping("/guardday_execution/changeIlsActivity")
-    public String changeIlsActivity(Model model,
-                                    @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
+    public String changeIlsActivity(@ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) {
 
         //Wenn ILS aktiv ist, setzen wir es auf inaktiv
         EntryType entryType = guardDayDto.isIlsActive() ? EntryType.ILS_INACTIVE : EntryType.ILS_ACTIVE;
@@ -416,7 +410,6 @@ public class GuarddayController {
     @RequestMapping("/exportToPdf")
     public String exportGuardDayToPdf(HttpServletResponse response,
                                     RedirectAttributes redirectAttributes,
-                                    Model model,
                                     @ModelAttribute(name = "guarddaydto") GuardDayDto guardDayDto) throws IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");

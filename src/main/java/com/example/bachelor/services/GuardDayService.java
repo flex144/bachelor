@@ -55,7 +55,7 @@ public class GuardDayService {
         GuardDayEntity guardDayEntity = guardDayRepository.findById(guardDayId).orElse(null);
 
         if (guardDayEntity == null) {
-            //TODO: throw exception
+            return null;
         }
 
         return guardDayMapper.mapGuardDayEntityToDto(guardDayEntity);
@@ -64,6 +64,10 @@ public class GuardDayService {
 
     public GuardDayDto readGuardDayByIdWithUsers(Long guardDayId) {
         GuardDayDto guardDayDto = readGuardDayById(guardDayId);
+
+        if (guardDayDto == null) {
+            return null;
+        }
 
         guardDayDto.setAllUsers(userService.readAllUserDtos());
         List<UserGuardingRelationDto> allRelations = readUserGuardingRelations(guardDayId);
