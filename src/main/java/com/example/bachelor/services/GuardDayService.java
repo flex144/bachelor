@@ -169,12 +169,6 @@ public class GuardDayService {
         userGuardingRelationRepository.deleteById(relationId);
     }
 
-    private List<UserGuardingRelationDto> filterBookedUserGuardingRelations(List<UserGuardingRelationDto> allRelations,
-                                                                            boolean booked) {
-
-        return allRelations.stream().filter(n -> n.isBooked() == booked).collect(Collectors.toList());
-    }
-
     public void saveGuardDaySeries(GuardDaySeriesDto guardDaySeriesDto) {
 
         if (guardDaySeriesDto == null || guardDaySeriesDto.noDaySet()) {
@@ -226,16 +220,7 @@ public class GuardDayService {
     @Async
     public void writeWeatherAPIResults(long guardDayId) throws InterruptedException {
 
-        /*
-        wait 1h
-        read guard day
-        while (guardDay is not closed)
-            readWeatherApi
-            writeWeatherApiResult
-            wait 1h
-            read guardday;
-         */
-        Thread.sleep(120000);
+        Thread.sleep(60000);
         GuardDayDto guardDayDto = readGuardDayById(guardDayId);
 
         while (guardDayDto.getActualEndTime() == null) {
@@ -243,7 +228,7 @@ public class GuardDayService {
             JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null, null);
             guardDayDto.getJournalEntries().add(journalEntryDtoWeather);
             saveGuardDayDto(guardDayDto);
-            Thread.sleep(10000);
+            Thread.sleep(60000);
             guardDayDto = readGuardDayById(guardDayId);
         }
     }

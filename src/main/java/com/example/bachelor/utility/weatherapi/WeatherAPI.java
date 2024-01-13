@@ -29,12 +29,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class WeatherAPI {
-
 
     public WeatherApiResult getCurrentWeatherData() {
         WeatherApiResult weatherApiResult = null;
@@ -51,21 +51,12 @@ public class WeatherAPI {
         //set up the end point
         String apiEndPoint="https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/";
         String location="Passau";
-        String startDate=null;
-        String endDate=null;
 
         String unitGroup="metric";
         String apiKey="Y93UZH25AZW28KAEVGTP6K24Q";
 
         StringBuilder requestBuilder=new StringBuilder(apiEndPoint);
         requestBuilder.append(URLEncoder.encode(location, StandardCharsets.UTF_8.toString()));
-
-        if (startDate!=null && !startDate.isEmpty()) {
-            requestBuilder.append("/").append(startDate);
-            if (endDate!=null && !endDate.isEmpty()) {
-                requestBuilder.append("/").append(endDate);
-            }
-        }
 
         URIBuilder builder = new URIBuilder(requestBuilder.toString());
 
@@ -109,14 +100,7 @@ public class WeatherAPI {
 
         JSONObject timelineResponse = new JSONObject(rawResult);
 
-        ZoneId zoneId=ZoneId.of(timelineResponse.getString("timezone"));
-
         System.out.printf("Weather data for: %s%n", timelineResponse.getString("resolvedAddress"));
-
-
-        /**
-         * Eigener Code
-         */
 
         JSONObject currentConditions = timelineResponse.getJSONObject("currentConditions");
 
@@ -129,25 +113,6 @@ public class WeatherAPI {
         weatherApiResult.setConditions(currentConditions.getString("conditions"));
 
         return weatherApiResult;
-
-        /**
-         * Eigener Code Ende
-         */
-
-        /*JSONArray values=timelineResponse.getJSONArray("days");
-
-        System.out.printf("Date\tMaxTemp\tMinTemp\tPrecip\tSource%n");
-        for (int i = 0; i < values.length(); i++) {
-            JSONObject dayValue = values.getJSONObject(i);
-
-            ZonedDateTime datetime=ZonedDateTime.ofInstant(Instant.ofEpochSecond(dayValue.getLong("datetimeEpoch")), zoneId);
-
-            double maxtemp=dayValue.getDouble("tempmax");
-            double mintemp=dayValue.getDouble("tempmin");
-            double pop=dayValue.getDouble("precip");
-            String source=dayValue.getString("source");
-            System.out.printf("%s\t%.1f\t%.1f\t%.1f\t%s%n", datetime.format(DateTimeFormatter.ISO_LOCAL_DATE), maxtemp, mintemp, pop,source );
-        }*/
     }
 
 

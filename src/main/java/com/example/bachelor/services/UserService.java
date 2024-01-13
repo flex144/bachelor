@@ -81,7 +81,7 @@ public class UserService{
         newUserEntity.setLastName(userDto.getLastName());
         newUserEntity.setLocalBranch(userDto.getLocalbranch());
         newUserEntity.setRole(UserRoles.ROLE_USER);
-        newUserEntity.setActive(false); //TODO: erstmal inaktiv setzen, erst bei Freischaltung durch ADMIN aktiv setzen
+        newUserEntity.setActive(false);
         userRepository.save(newUserEntity);
         return newUserEntity;
     }

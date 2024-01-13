@@ -27,6 +27,23 @@
 <div th:replace="fragments/header :: navbar"></div>
 
 <div class="container">
+
+    <h1>Kalender</h1>
+
+    <p class="mt-2"></p>
+
+    <div class="container-fluid px-4">
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="mt-2"></p>
+
+<div class="container">
     <h1>Alle Wachtage</h1>
 
     <p class="mt-2"></p>
@@ -52,21 +69,6 @@
             </tr>
         </tbody>
     </table>
-</div>
-
-<div class="container">
-
-    <h1>Kalender Test</h1>
-
-    <p class="mt-2"></p>
-
-    <div class="container-fluid px-4">
-        <div class="row">
-            <div class="col-xs-12">
-                <div id="calendar"></div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script th:inline="javascript">

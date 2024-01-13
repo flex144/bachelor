@@ -18,7 +18,6 @@ public final class JournalHelper {
                                                      String description, WeatherApiResult weatherApiResult,
                                                      UserDto userBooked, Long userId) {
         JournalEntryDto journalEntryDto = new JournalEntryDto();
-        //TODO: Hier NutzerId als Parameter übergeben, wenn null dann aus Principal
         if (!EntryType.WEATHER.equals(entryType)) {
             UserDetailsPrincipal principal = (UserDetailsPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             journalEntryDto.setUserId(userId != null ? userId : principal.getUserId());

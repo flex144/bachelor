@@ -48,42 +48,33 @@ public class RegistrationController {
     @PostMapping
     public ModelAndView registerUser(@ModelAttribute("user") UserDto userDto, ModelMap model) {
 
-        String errorMessage = "";
+        String errorMessage = null;
 
         if (userDto.getPassword().equals(userDto.getConfirmationPassword())) {
-
-
             try {
+                userDto.getEmail().trim();
                 userService.createUser(userDto);
-            } catch (UserAlreadyExistsException e) { //TODO: Create Own Excption
+            } catch (UserAlreadyExistsException e) {
                 errorMessage = e.getLocalizedMessage();
             }
         } else {
             errorMessage = "Passwörter stimmen nicht überein!";
         }
 
-        if (errorMessage.equals("")) {
-
-
-
-            ConfirmationTokenEntity confirmationToken = userService.createNewConfirmationToken(userDto.getEmail());
-
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(userDto.getEmail());
-            mailMessage.setFrom(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
-            mailMessage.setSubject("Complete Registration!");
-            String uri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toString();
-            String url = uri + "/confirm?token=" + confirmationToken.getConfirmationToken();
-            mailMessage.setText("To confirm your account, please click here : " + url + "  (If that" +
-                    " doesn't work, please copy and paste the link into your browser.)");
-
-            emailSenderService.sendEmail(mailMessage);
-            model.addAttribute("success", "success");
-            return new ModelAndView("redirect:/login", model);
-        } else {
+        if (errorMessage != null) {
             model.addAttribute("errorMessage", errorMessage);
             return new ModelAndView(HtmlConstants.REGISTRATION, model);
         }
+
+        ConfirmationTokenEntity confirmationToken = userService.createNewConfirmationToken(userDto.getEmail());
+
+        String uri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toString();
+        emailSenderService.sendConfirmationToken(userDto, confirmationToken, uri);
+        emailSenderService.sendMessageToAdmins(userDto, uri);
+
+        model.addAttribute("success", "success");
+        return new ModelAndView("redirect:/login", model);
+
     }
 
 }

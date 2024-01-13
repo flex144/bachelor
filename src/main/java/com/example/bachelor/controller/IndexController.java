@@ -98,17 +98,18 @@ public class IndexController {
     @RequestMapping(value="/forgotPassword", method = RequestMethod.POST)
     public String postForgotPassword(RedirectAttributes redirectAttributes,
                                      @ModelAttribute("userDto") UserDto userDto) {
-        String errorMessage = "";
+        String errorMessage = null;
         UserDto checkUser = userService.findUserDtoByEmail(userDto.getEmail());
         if (userDto.getEmail() == null || userDto.getEmail().equals("")) {
             errorMessage = "E-Mail Feld muss ausgefüllt werden";
-            redirectAttributes.addFlashAttribute("errorMessagePW", errorMessage);
-            return HtmlConstants.REDIRECT + "forgotPassword";
         } else if (checkUser == null) {
             errorMessage = "Nutzer nicht registriert!";
+        }
+
+        if (errorMessage != null) {
             redirectAttributes.addFlashAttribute("errorMessagePW", errorMessage);
             return HtmlConstants.REDIRECT + "forgotPassword";
-        } else {
+        }
             String newPassword = userService.setRandomUserPassword(userDto.getEmail());
 
             SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -122,7 +123,7 @@ public class IndexController {
 
             redirectAttributes.addFlashAttribute("verified", "Passwort wurde zurückgesetzt!");
             return HtmlConstants.REDIRECT + "login";
-        }
+
     }
 
 }

@@ -36,6 +36,6 @@ public class TimePeriod {
 
     @Override
     public String toString() {
-        return hour + ":" + minute + ":" + second;
+        return hour + "H " + minute + "M " + second + "S";
     }
 }

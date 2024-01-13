@@ -18,13 +18,6 @@ public class JournalService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
-    public void saveJournal(Set<JournalEntryEntity> journalEntities) {
-
-        if (journalEntities != null) {
-            journalEntryRepository.saveAll(journalEntities);
-        }
-    }
-
     public void saveJournalEntry(JournalEntryEntity journalEntryEntity) {
         journalEntryRepository.save(journalEntryEntity);
     }

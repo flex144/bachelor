@@ -73,14 +73,12 @@ public class GuardDayPDFExportService {
         table.setSpacingBefore(10);
 
         fillTableHeader(table, "Datum", "Beginn", "Ende", "Dauer");
-
         fillGeneralDataTable(guardDayDto, table);
 
         document.add(table);
     }
 
     private void fillGeneralDataTable(GuardDayDto guardDayDto, PdfPTable table) {
-        DateFormat dateFormatter = new SimpleDateFormat("HH:mm");
         table.addCell(String.valueOf(guardDayDto.getGuardingDate()));
         table.addCell(dateFormatter.format(guardDayDto.getActualStartTime()));
         table.addCell(dateFormatter.format(guardDayDto.getActualEndTime()));
@@ -108,7 +106,6 @@ public class GuardDayPDFExportService {
         ).contains(n.getEntryType())).collect(Collectors.toList());
         Collections.reverse(weatherEntries);
 
-        DateFormat dateFormatter = new SimpleDateFormat("HH:mm");
         for (JournalEntryDto entry : weatherEntries) {
             table.addCell(dateFormatter.format(entry.getCreation()));
             table.addCell(EntryType.WATER_TEMP.equals(entry.getEntryType()) ? "Wassertemperatur" : "Wetter");
@@ -129,14 +126,9 @@ public class GuardDayPDFExportService {
     }
 
     private void fillUserDataTable(GuardDayDto guardDayDto, PdfPTable table) {
-
-
-        DateFormat dateFormatter = new SimpleDateFormat("HH:mm");
-
         List<UserGuardingRelationDto> allRelations = guardDayService.readUserGuardingRelations(guardDayDto.getGuardDayId()).stream().filter(n -> !n.isBooked()).collect(Collectors.toList());
 
         for (UserGuardingRelationDto relation : allRelations) {
-
             table.addCell(relation.getUserDto() != null ? relation.getUserDto().getFirstName() + " " + relation.getUserDto().getLastName() : relation.getUserFreetext());
             table.addCell(dateFormatter.format(relation.getGuardingStart()));
             table.addCell(dateFormatter.format(relation.getGuardingEnd()));
@@ -159,12 +151,7 @@ public class GuardDayPDFExportService {
     }
 
     private void fillGuardingDataTable(GuardDayDto guardDayDto, PdfPTable table) {
-
-
-        DateFormat dateFormatter = new SimpleDateFormat("HH:mm");
-
         List<JournalEntryDto> entries = guardDayDto.getJournalEntries().stream().filter(n -> !Arrays.asList(EntryType.WEATHER, EntryType.WATER_TEMP, EntryType.USER_GUARD_BEGIN, EntryType.USER_GUARD_END).contains(n.getEntryType())).collect(Collectors.toList());
-
         Collections.reverse(entries);
 
         for (JournalEntryDto entry : entries) {

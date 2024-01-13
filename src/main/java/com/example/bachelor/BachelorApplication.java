@@ -11,7 +11,6 @@ import com.example.bachelor.repositories.JournalEntryRepository;
 import com.example.bachelor.repositories.UserRepository;
 import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.JournalService;
-import com.example.bachelor.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -19,8 +18,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.time.LocalDateTime;

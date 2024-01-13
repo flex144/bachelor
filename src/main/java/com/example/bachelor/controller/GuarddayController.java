@@ -260,12 +260,9 @@ public class GuarddayController {
             entryType = EntryType.GUARD_END;
             endUserRelations(guardDayDto);
         }
-        WeatherApiResult weatherApiResult = weatherApi.getCurrentWeatherData();
-        JournalEntryDto journalEntryDtoWeather = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), EntryType.WEATHER, null, weatherApiResult, null, null);
 
         JournalEntryDto journalEntryDto = JournalHelper.createJournalEntry(guardDayDto.getGuardDayId(), entryType, null, null, null, null);
         guardDayDto.getJournalEntries().add(journalEntryDto);
-        guardDayDto.getJournalEntries().add(journalEntryDtoWeather);
         guardDayService.saveGuardDayDto(guardDayDto);
 
         if (guardDayDto.getActualEndTime() == null) {

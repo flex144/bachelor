@@ -4,6 +4,7 @@ import com.example.bachelor.data.dto.UserDetailsPrincipal;
 import com.example.bachelor.data.dto.UserDto;
 import com.example.bachelor.data.dto.UserStatisticsDto;
 import com.example.bachelor.data.entities.UserEntity;
+import com.example.bachelor.services.EmailSenderService;
 import com.example.bachelor.services.GuardDayService;
 import com.example.bachelor.services.UserService;
 import com.example.bachelor.utility.constants.HtmlConstants;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.nio.file.attribute.UserPrincipal;
 import java.util.HashMap;
@@ -29,6 +31,9 @@ public class UserController {
 
     @Autowired
     private GuardDayService guardDayService;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @GetMapping("/users")
     public String getUsers(Model model) {
@@ -79,6 +84,9 @@ public class UserController {
 
         UserStatisticsDto userStatisticsDto = guardDayService.getUserStatisticsDto(user.getUserId());
         model.addAttribute("statistics", userStatisticsDto);
+
+        String uri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toString();
+        emailSenderService.sendActivationNotice(user, uri);
 
         return HtmlConstants.REDIRECT + "user/" + user.getUserId();
     }
